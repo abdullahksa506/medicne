@@ -1,0 +1,25 @@
+{
+  "name": "مساعد طبيب الأسرة",
+  "short_name": "طبيب الأسرة",
+  "description": "مرجع سريع لطبيب الأسرة يعمل بدون إنترنت: حاسبات سريرية، أدلة مختصرة، وصفات جاهزة، تطعيمات، وفحوصات وقائية.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6f8",
+  "theme_color": "#0d9488",
+  "categories": ["medical", "health", "productivity"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "العلامات الحمراء", "url": "./index.html#/tools/redflags" },
+    { "name": "جرعة طفل", "url": "./index.html#/calc/peds-dose" },
+    { "name": "الوصفات الجاهزة", "url": "./index.html#/rx" }
+  ]
+}
