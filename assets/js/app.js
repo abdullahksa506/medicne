@@ -176,19 +176,34 @@
   }
 
   /* ---------- الصفحات ---------- */
-  const CALC_CATS = ['أساسية', 'قلب', 'عدوى', 'نفسية', 'مخبرية', 'أطفال', 'وقاية'];
+  const CALC_CATS = ['كبار السن', 'أساسية', 'قلب', 'عدوى', 'نفسية', 'مخبرية', 'أطفال', 'وقاية'];
+
+  const geriOf = arr => (arr || []).filter(o => o.geri);
 
   function pageHome() {
     setTop('مساعد طبيب الأسرة', false);
     showSearch(true);
 
+    const geriCount = geriOf(window.CALCS).length + geriOf(window.GUIDES).length
+      + geriOf(window.TOOLS).length + geriOf(window.RX).length + geriOf(window.HANDOUTS).length;
+
+    const feat = el('a', 'feature');
+    feat.href = '#/geri';
+    feat.innerHTML = `<span class="feature__ic"><svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10" cy="5" r="2.5"/><path d="M10 9v11M10 13l4 2M6 20l4-7M17 10v11M17 12h-3"/></svg></span>
+      <span class="feature__body">
+        <span class="feature__t">كبار السن</span>
+        <span class="feature__d">التقييم الشامل، الهشاشة، الخرف، السقوط، ومراجعة الأدوية — ${geriCount} مادة</span>
+      </span><span class="row__chev">${chev}</span>`;
+    view.appendChild(feat);
+
     const quick = [
+      { t: 'مقياس الهشاشة', d: 'يوجّه كل قرار آخر', r: '#/calc/cfs', ic: '<path d="M4 19h16M7 19V9M12 19V5M17 19v-7"/>' },
+      { t: 'أدوية يُتجنّب وصفها', d: 'معايير Beers', r: '#/tools/beers', ic: '<path d="M9 3h6v4H9zM7 7h10l1 14H6z"/><path d="M9 12h6"/>' },
+      { t: 'الهذيان', d: 'مقياس 4AT في دقيقتين', r: '#/calc/4at', ic: '<path d="M12 3a6 6 0 016 6c0 3-2 4-2 7H8c0-3-2-4-2-7a6 6 0 016-6z"/><path d="M9 20h6"/>' },
+      { t: 'خطر السقوط', d: 'فرز وعوامل قابلة للتعديل', r: '#/calc/falls-risk', ic: '<path d="M13 4a1.5 1.5 0 100-.01M11 21l1-6-3-3 1-5 4 3 3 1"/>' },
       { t: 'العلامات الحمراء', d: 'ما لا يجوز تفويته', r: '#/tools/redflags', ic: '<path d="M4 4v16M4 5h13l-2 4 2 4H4"/>' },
-      { t: 'جرعة طفل', d: 'حساب بالمليلتر', r: '#/calc/peds-dose', ic: '<path d="M9 3h6M12 3v5M7 21h10a2 2 0 002-2v-6a5 5 0 00-5-5h-3a5 5 0 00-5 5v6a2 2 0 002 2z"/>' },
-      { t: 'وظائف الكلى', d: 'eGFR وتعديل الجرعة', r: '#/calc/egfr', ic: '<path d="M12 3c4 0 7 3 7 7 0 5-4 8-7 11-3-3-7-6-7-11 0-4 3-7 7-7z"/>' },
-      { t: 'خطورة القلب', d: 'ASCVD لعشر سنوات', r: '#/calc/ascvd', ic: '<path d="M20 12h-4l-2 5-4-10-2 5H4"/>' },
       { t: 'قوالب التوثيق', d: 'ملاحظات جاهزة', r: '#/tools/notes', ic: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5"/>' },
-      { t: 'التطعيمات', d: 'الجدول الأساسي', r: '#/tools/vaccines', ic: '<path d="M14 4l6 6M17 7l-9 9-3 5 5-3 9-9"/>' },
     ];
 
     view.appendChild(el('div', 'sec-title', 'وصول سريع'));
@@ -233,6 +248,30 @@
       list.appendChild(a);
     });
     return list;
+  }
+
+  function pageGeri() {
+    setTop('كبار السن', false);
+    showSearch(true);
+
+    const sections = [
+      { t: 'مقاييس التقييم', arr: geriOf(window.CALCS), pre: '#/calc/' },
+      { t: 'أدلة سريرية', arr: geriOf(window.GUIDES), pre: '#/guide/' },
+      { t: 'أدوات مرجعية', arr: geriOf(window.TOOLS), pre: '#/tools/' },
+      { t: 'وصفات', arr: geriOf(window.RX), pre: '#/rx/' },
+      { t: 'إرشادات للأسرة ومقدّم الرعاية', arr: geriOf(window.HANDOUTS), pre: '#/handout/' },
+    ];
+
+    view.appendChild(el('div', 'note',
+      'ابدأ بـ <b>مقياس الهشاشة</b> — درجته تحدّد أهداف الضغط والسكر، وأي دواء يستحق الاستمرار، ومتى يبدأ نقاش أهداف الرعاية.'));
+
+    sections.forEach(s => {
+      if (!s.arr.length) return;
+      view.appendChild(el('div', 'sec-title', s.t));
+      view.appendChild(rowList(s.arr.map(o => ({
+        title: o.title, sub: o.sub || '', route: s.pre + o.id,
+      }))));
+    });
   }
 
   function pageList(title, arr, prefix, groupBy) {
@@ -354,7 +393,19 @@
       wrap.appendChild(el('label', null,
         esc(f.label) + (f.unit ? ` <span class="field__hint">(${esc(f.unit)})</span>` : '')));
 
-      if (f.type === 'seg') {
+      if (f.type === 'choice') {
+        const group = 'ch_' + f.id + '_' + Math.random().toString(36).slice(2, 7);
+        f.opts.forEach(o => {
+          const lab = el('label', 'check');
+          const inp = el('input');
+          inp.type = 'radio';
+          inp.name = group;
+          inp.addEventListener('change', () => { state[f.id] = o.v; run(); });
+          lab.append(inp, el('span', 'check__t',
+            `<b>${esc(o.t)}</b>${o.d ? `<span class="check__d">${esc(o.d)}</span>` : ''}`));
+          wrap.appendChild(lab);
+        });
+      } else if (f.type === 'seg') {
         state[f.id] = f.def != null ? f.def : f.opts[0].v;
         const seg = el('div', 'seg');
         f.opts.forEach(o => {
@@ -400,8 +451,12 @@
     const card = el('div', 'card');
     const box = resultBox();
 
+    /* بعض المقاييس تكون الصفر فيها أسوأ نتيجة (الاستقلالية، التغذية، الإدراك)،
+       فلا تُعرض نتيجة قبل أن يُدخل الطبيب شيئاً حتى لا تبدو النتيجة الابتدائية حكماً. */
+    let touched = !c.needsInput;
     const total = () => Object.values(state).reduce((a, b) => a + (+b || 0), 0);
     const run = () => {
+      if (!touched) { paintResult(box, null); return; }
       const t = total();
       const band = c.bands.find(b => t <= b.max) || c.bands[c.bands.length - 1];
       const lines = [band.note];
@@ -423,6 +478,7 @@
           b.type = 'button';
           b.setAttribute('aria-pressed', String(ix === 0));
           b.addEventListener('click', () => {
+            touched = true;
             state[it.id] = o.pts;
             [...seg.children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
             run();
@@ -443,6 +499,7 @@
           b.setAttribute('aria-label', lbl);
           b.setAttribute('aria-pressed', String(ix === 0));
           b.addEventListener('click', () => {
+            touched = true;
             state[it.id] = ix;
             [...seg.children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
             run();
@@ -456,13 +513,14 @@
         const lab = el('label', 'check');
         const inp = el('input');
         inp.type = 'checkbox';
-        inp.addEventListener('change', () => { state[it.id] = inp.checked ? it.pts : 0; run(); });
+        inp.addEventListener('change', () => { touched = true; state[it.id] = inp.checked ? it.pts : 0; run(); });
         lab.append(inp, el('span', 'check__t', esc(it.t)),
           el('span', 'check__pts', (it.pts > 0 ? '+' : '') + it.pts));
         card.appendChild(lab);
       }
     });
 
+    if (c.intro) view.appendChild(el('div', 'note', c.intro));
     if (c.scale) {
       view.appendChild(el('div', 'note',
         'اختر لكل بند: ' + c.scale.map((s, i) => `<b>${i}</b> ${s}`).join(' · ')));
@@ -526,9 +584,12 @@
       return;
     }
 
-    setTab(sec === 'handout' ? 'rx' : sec);
+    setTab(sec === 'handout' ? 'rx' : sec === 'geri' ? 'home' : sec);
 
     switch (sec) {
+      case 'geri':
+        pageGeri();
+        break;
       case 'calc':
         if (id) { pushRecent(hash); pageCalc(id); }
         else pageList('الحاسبات السريرية', sortByCat(window.CALCS, CALC_CATS), '#/calc/', true);

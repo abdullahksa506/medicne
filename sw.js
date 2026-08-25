@@ -1,5 +1,5 @@
 /* عامل الخدمة — يجعل الموقع يعمل كاملاً بدون إنترنت */
-const CACHE = 'fm-assist-v1';
+const CACHE = 'fm-assist-v2';
 
 const ASSETS = [
   './',
@@ -11,6 +11,8 @@ const ASSETS = [
   './assets/js/data-guides.js',
   './assets/js/data-rx.js',
   './assets/js/data-tools.js',
+  './assets/js/data-geriatrics.js',
+  './assets/js/calc-geriatrics.js',
   './assets/icons/icon.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
