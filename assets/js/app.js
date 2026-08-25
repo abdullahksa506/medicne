@@ -176,7 +176,7 @@
   }
 
   /* ---------- الصفحات ---------- */
-  const CALC_CATS = ['كبار السن', 'أساسية', 'قلب', 'عدوى', 'نفسية', 'مخبرية', 'أطفال', 'وقاية'];
+  const CALC_CATS = ['كبار السن', 'أساسية', 'قلب', 'عدوى', 'نفسية', 'مخبرية', 'نساء', 'وقاية'];
 
   const geriOf = arr => (arr || []).filter(o => o.geri);
 
@@ -196,6 +196,16 @@
         <span class="feature__d">التقييم الشامل، الهشاشة، الخرف، السقوط، ومراجعة الأدوية — ${geriCount} مادة</span>
       </span><span class="row__chev">${chev}</span>`;
     view.appendChild(feat);
+
+    const featNote = el('a', 'feature feature--alt');
+    featNote.href = '#/note';
+    featNote.innerHTML = `<span class="feature__ic"><svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h4"/></svg></span>
+      <span class="feature__body">
+        <span class="feature__t">Progress Note</span>
+        <span class="feature__d">كتابة تقرير العيادة بصيغة القسم، مع تقييم وتغذية راجعة تعلّمك تكتبه بنفسك</span>
+      </span><span class="row__chev">${chev}</span>`;
+    view.appendChild(featNote);
 
     const quick = [
       { t: 'مقياس الهشاشة', d: 'يوجّه كل قرار آخر', r: '#/calc/cfs', ic: '<path d="M4 19h16M7 19V9M12 19V5M17 19v-7"/>' },
@@ -576,6 +586,7 @@
     const parts = hash.replace(/^#\//, '').split('/');
     const [sec, id] = parts;
     view.innerHTML = '';
+    view.className = 'view';
     window.scrollTo(0, 0);
 
     if (sec === 'search') {
@@ -587,6 +598,17 @@
     setTab(sec === 'handout' ? 'rx' : sec === 'geri' ? 'home' : sec);
 
     switch (sec) {
+      case 'note': {
+        const sub = parts[1], arg = parts[2];
+        if (sub === 'new' && arg) window.NoteUI.form(view, setTop, showSearch, arg);
+        else if (sub === 'new') window.NoteUI.picker(view, setTop, showSearch);
+        else if (sub === 'result') window.NoteUI.result(view, setTop, showSearch, toast, copyText);
+        else if (sub === 'critique') window.NoteUI.critique(view, setTop, showSearch, toast, copyText);
+        else if (sub === 'expand') window.NoteUI.expand(view, setTop, showSearch, toast, copyText);
+        else if (sub === 'drill') window.NoteUI.drill(view, setTop, showSearch, toast);
+        else window.NoteUI.hub(view, setTop, showSearch);
+        break;
+      }
       case 'geri':
         pageGeri();
         break;

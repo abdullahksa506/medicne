@@ -167,8 +167,8 @@ html[data-theme="dark"] .feature__ic { background: rgba(0, 0, 0, .16); }
 }
 .row:active { background: var(--surface-2); }
 .row__body { flex: 1; min-width: 0; }
-.row__t { font-weight: 650; font-size: .96rem; }
-.row__d { font-size: .79rem; color: var(--text-dim); }
+.row__t { display: block; font-weight: 650; font-size: .96rem; line-height: 1.4; }
+.row__d { display: block; font-size: .79rem; color: var(--text-dim); line-height: 1.45; }
 .row__chev { color: var(--text-dim); flex: 0 0 18px; }
 .row__chev svg { width: 18px; height: 18px; }
 .row__tag {
@@ -290,7 +290,7 @@ html[data-theme="dark"] .btn--ghost { color: var(--text); }
 /* شريط التبويبات السفلي */
 .tabbar {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 50;
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: saturate(1.6) blur(14px);
   -webkit-backdrop-filter: saturate(1.6) blur(14px);
@@ -299,9 +299,10 @@ html[data-theme="dark"] .btn--ghost { color: var(--text); }
 }
 .tab {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  height: var(--tabbar-h); text-decoration: none; color: var(--text-dim); font-size: .68rem; font-weight: 600;
+  height: var(--tabbar-h); text-decoration: none; color: var(--text-dim); font-size: .64rem; font-weight: 600;
+  white-space: nowrap; letter-spacing: -.01em;
 }
-.tab svg { width: 22px; height: 22px; }
+.tab svg { width: 21px; height: 21px; }
 .tab[aria-current="page"] { color: var(--brand-ink); }
 .tab:active { background: var(--surface-2); }
 
@@ -330,4 +331,144 @@ html[data-theme="dark"] .btn--ghost { color: var(--text); }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
+}
+
+
+/* ===== Progress Note Assistant ===== */
+.note-hero {
+  background: linear-gradient(135deg, #1e293b 0%, #0f766e 100%);
+  color: #fff; border-radius: var(--radius); padding: 18px; margin-top: 10px;
+  direction: ltr; text-align: left;
+}
+.note-hero__t { font-weight: 800; font-size: 1.15rem; margin-bottom: 6px; }
+.note-hero__d { font-size: .85rem; line-height: 1.6; opacity: .93; }
+.note-hero__stat {
+  margin-top: 10px; padding: 10px 14px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: .84rem; font-weight: 600; direction: ltr; text-align: left;
+}
+.feature--alt { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; }
+html[data-theme="dark"] .feature--alt { color: #e8eef5; }
+html[data-theme="dark"] .feature--alt .feature__ic { background: rgba(255,255,255,.14); }
+.feature--alt .feature__t { direction: ltr; }
+
+.note-note {
+  background: var(--info-soft); border-inline-start: 4px solid var(--info);
+  padding: 11px 13px; border-radius: 10px; font-size: .85rem; margin-bottom: 12px; line-height: 1.65;
+}
+.note-note.note--warn { background: var(--warn-soft); border-color: var(--warn); }
+.note-rules {
+  margin-top: 18px; padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius); font-size: .84rem;
+  direction: ltr; text-align: left; line-height: 1.65;
+}
+.note-rules ul { margin: 8px 0 0; padding-inline-start: 18px; }
+.note-rules li { margin-bottom: 6px; }
+
+/* the form */
+.note-progress { position: sticky; top: 62px; z-index: 25; background: var(--bg); padding: 8px 0 10px; }
+.note-progress__bar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.note-progress__bar span { display: block; height: 100%; background: var(--brand); transition: width .25s; }
+.note-progress__t { font-size: .74rem; color: var(--text-dim); margin-top: 5px; }
+
+.field__why { font-size: .75rem; color: var(--text-dim); line-height: 1.5; margin: -2px 0 7px; }
+.req { color: var(--danger); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.chip {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: 9px 14px; min-height: 40px;
+  font: inherit; font-size: .84rem; cursor: pointer; line-height: 1.3;
+}
+.chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 650; }
+html[data-theme="dark"] .chip[aria-pressed="true"] { color: #06251f; }
+.chip--flag { border-style: dashed; border-color: color-mix(in srgb, var(--danger) 55%, var(--border)); }
+.chip--flag[aria-pressed="true"] { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* the note itself */
+.notebox {
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px; margin: 0 0 12px; overflow-x: auto;
+  direction: ltr; text-align: left;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .78rem; line-height: 1.7; white-space: pre; tab-size: 2;
+}
+.ph { background: var(--danger); color: #fff; padding: 1px 5px; border-radius: 4px; font-weight: 700; }
+
+.btn--locked { background: var(--surface-2); color: var(--text-dim); cursor: not-allowed; }
+html[data-theme="dark"] .btn--locked { color: var(--text-dim); }
+.btn--small { min-height: 42px; font-size: .85rem; margin-bottom: 12px; }
+
+/* alerts */
+.alert {
+  border: 2px solid var(--danger); background: var(--danger-soft);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+}
+.alert--decided { opacity: .6; border-color: var(--border); }
+.alert__t { font-weight: 800; font-size: .95rem; margin-bottom: 5px; }
+.alert__d { font-size: .85rem; line-height: 1.6; margin-bottom: 8px; }
+.alert__q { font-size: .85rem; font-weight: 650; margin-bottom: 10px; }
+.alert__done { font-size: .85rem; font-weight: 700; color: var(--text-dim); padding: 8px 0; }
+.miss__why { display: block; font-size: .78rem; color: var(--text-dim); line-height: 1.5; margin-top: 2px; }
+
+/* rubric */
+.rub { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: .87rem; }
+.rub__t { flex: 1; }
+.rub__dots { display: flex; gap: 4px; }
+.rub__dots i { width: 20px; height: 8px; border-radius: 999px; background: var(--surface-2); display: block; }
+.rub__dots i.on { background: var(--brand); }
+.rub__n { font-size: .78rem; color: var(--text-dim); font-weight: 700; min-width: 30px; text-align: end; }
+.rub__verdict { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: .86rem; line-height: 1.6; }
+
+/* teaching */
+.teach {
+  background: var(--surface); border: 1px solid var(--border); border-inline-start: 4px solid var(--warn);
+  border-radius: 12px; padding: 13px 15px; margin-bottom: 10px; font-size: .87rem; line-height: 1.65;
+}
+.teach--good { border-inline-start-color: var(--ok); }
+.teach__lbl { font-size: .7rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+.teach__lbl:not(:first-child) { margin-top: 9px; }
+.teach__fix {
+  background: var(--surface-2); border-radius: 9px; padding: 10px 12px; margin: 0;
+  direction: ltr; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .76rem; line-height: 1.65;
+}
+.teach__rule { margin-top: 8px; font-size: .78rem; color: var(--text-dim); font-weight: 600; }
+
+/* the primary action on a long form stays reachable without scrolling to the end */
+.btnrow--sticky {
+  position: sticky; z-index: 26;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 8px);
+  background: var(--bg); padding: 8px 0;
+  box-shadow: 0 -8px 16px -8px rgba(16, 32, 43, .18);
+}
+html[data-theme="dark"] .btnrow--sticky { box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, .5); }
+
+/* The Progress Note feature is English end to end (the EMR and the team are).
+   Inside an RTL document that needs an explicit LTR island, or bidi drags the
+   punctuation of every English sentence to the wrong edge. */
+.view.en { direction: ltr; text-align: left; }
+.view.en .sec-title,
+.view.en .row,
+.view.en .card,
+.view.en .field,
+.view.en .alert,
+.view.en .teach,
+.view.en .rub,
+.view.en .note-note,
+.view.en .note-rules,
+.view.en .empty,
+.view.en .disclaimer { direction: ltr; text-align: left; }
+.view.en .note-note,
+.view.en .teach { border-inline-start-width: 4px; }
+.view.en .row__tag { direction: rtl; }
+.view.en .feature__d { direction: rtl; text-align: right; }
+
+/* chevrons point the way the reader is going, which flips with direction */
+.view.en .row__chev svg { transform: scaleX(-1); }
+
+/* the select caret is painted with gradients, so its side must flip with direction */
+.view.en select {
+  background-position: right 16px center, right 11px center;
+  padding-right: 34px; padding-left: 12px;
 }
