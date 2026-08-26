@@ -125,16 +125,27 @@
     'CKD': [
       'CKD (eGFR __, was __ twelve months ago, ACR __): stable; for annual monitoring',
       'CKD (eGFR __, declining): drug doses reviewed and adjusted; for nephrology referral',
+      'CKD with albuminuria (ACR __): for ACE inhibitor/ARB titrated to maximum tolerated dose and SGLT2 inhibitor added',
+      'CKD (eGFR __): nephrotoxic drugs reviewed — __ stopped; sick day rules explained',
     ],
     'IHD / AF': [
       'IHD (stable, no exertional symptoms, on __): no change today',
+      'IHD with new or worsening exertional symptoms: for urgent cardiology review; secondary prevention optimised',
       'AF (rate controlled, __ bpm, CHA2DS2-VASc __, on __): no change today',
+      'AF (rate __ bpm, above target): for rate-control dose increase and repeat ECG',
+      'AF with CHA2DS2-VASc __ and no anticoagulation: for anticoagulation started after bleeding risk discussion',
+      'Secondary prevention reviewed: antiplatelet, statin, ACE inhibitor and beta blocker all in place',
     ],
     'Osteoporosis': [
       'Osteoporosis (T-score __, on __): tolerating treatment; calcium and vitamin D replete',
       'Fragility fracture on treatment: for treatment review and DEXA',
     ],
-    'Obesity': ['Obesity (BMI __): for structured weight management; 5-10% target discussed'],
+    'Obesity': [
+      'Obesity (BMI __): for structured weight management; 5-10% target discussed',
+      'Obesity (BMI __) with comorbidity: meets criteria for pharmacotherapy; for GLP-1 receptor agonist discussion',
+      'Obesity (BMI __) after failed structured attempts: for bariatric surgery referral',
+      'Weight stable/reduced by __ kg since last visit: for continued current plan',
+    ],
     generic: [
       '__ (__): __; for __',
       '__ (stable): no change today',
@@ -146,6 +157,114 @@
       'No indication for imaging at this stage',
       '__: explained in detail, but still insisting; not ordered, rationale documented; __ offered and accepted',
       '__: declined after discussion; risks explained and documented, __ offered instead',
+    ],
+  };
+
+  /* Assessment lines for the complaint-driven visits. Each library covers the real
+     decision branches for that presentation: the reassuring one, the one that needs a
+     workup, and the one that escalates — so a template exists for the visit you are
+     actually in, not only for chronic reviews. */
+  const AV = {
+    palpitation: [
+      'Palpitation (benign features, __ months, no red flags, ECG today normal): reassured; for TFT and CBC to exclude secondary causes, review with results',
+      'Palpitation (exertional, with __): features not consistent with a benign cause; for urgent cardiology referral and same-day ECG',
+      'Palpitation (irregular, ECG showing AF at __ bpm): for rate control and CHA2DS2-VASc-guided anticoagulation; echo requested',
+      'Palpitation (isolated ectopic beats on ECG, no structural features): benign ectopy; reassurance given, no further workup indicated',
+      'Palpitation undiagnosed after initial workup: for 24-hour Holter monitoring; symptom diary explained',
+    ],
+    'chest-pain': [
+      'Chest pain (exertional, relieved by rest, ECG today with no acute changes): features consistent with stable angina — a normal resting ECG does not exclude it; for urgent cardiology referral, aspirin and GTN started',
+      'Chest pain (reproducible on palpation, non-exertional, __ weeks): musculoskeletal in origin; for NSAID course and review 2/52',
+      'Chest pain (burning, postprandial, worse lying flat): consistent with reflux; for PPI trial 8/52',
+      'Chest pain (pleuritic, Wells __): PE considered; for D-dimer and CTPA if positive',
+      'Chest pain with red flags (__): not safe for outpatient workup; sent to ER with handover given',
+      'Atypical chest pain with multiple risk factors: ischaemia cannot be excluded on history alone; for functional or anatomical testing',
+    ],
+    headache: [
+      'Migraine without aura (meets criteria, __ attacks/month, no red flags): for acute treatment as below; prophylaxis discussed',
+      'Medication-overuse headache (analgesia on __ days/month): for structured withdrawal and prophylaxis started; worsening for two weeks explained',
+      'Tension-type headache (bilateral, non-pulsating, no red flags): for simple analgesia; sleep and stress addressed',
+      'Headache with red flags (__): SNOOP positive; for urgent imaging and referral',
+      'New headache over age 50 with ESR __: giant cell arteritis suspected; for high-dose steroid started today and urgent referral',
+      'Headache of unclear type: for a headache diary over 4/52 and reassessment',
+    ],
+    'back-pain': [
+      'Mechanical low back pain (__ weeks, no red flags, normal neurology): no indication for imaging at this stage; for analgesia, activity maintenance and physiotherapy',
+      'Lumbar radiculopathy (dermatomal, SLR positive, power intact): for conservative management and review 4/52; refer if the deficit progresses',
+      'Low back pain with red flags (__): for urgent MRI and specialist referral',
+      'Suspected cauda equina syndrome (__): emergency; sent to ER directly and the spinal team informed',
+      'Chronic low back pain (over 12 weeks): for a structured exercise programme; opioids avoided given limited benefit and harm profile',
+    ],
+    dizziness: [
+      'BPPV (positional, lasting seconds, Dix-Hallpike positive on the __ side): Epley manoeuvre performed today; home exercises explained',
+      'Orthostatic hypotension (__/__ lying to __/__ standing): drug-induced; for __ reduced and postural BP rechecked 2/52',
+      'Vestibular neuritis (continuous over days, no central signs): for a short vestibular sedative course and vestibular rehabilitation',
+      'Dizziness with central features (__): posterior circulation stroke cannot be excluded; sent to ER',
+      'Presyncope with cardiac features: for ECG, postural BP and cardiology referral',
+    ],
+    fatigue: [
+      'Fatigue (__ months, identified sleep deficit, no B symptoms, examination normal): most consistent with sleep insufficiency; for sleep hygiene and reassessment 4/52',
+      'Fatigue with iron deficiency (Hb __, ferritin __): for iron replacement and investigation of the cause',
+      'Fatigue with hypothyroidism (TSH __): for levothyroxine started and TSH in 6/52',
+      'Fatigue with a positive depression screen (PHQ-9 __): for treatment as below',
+      'Fatigue with red flags (__): malignancy and infection not excluded; for urgent workup',
+      'Fatigue with a negative workup: no organic cause identified; for graded activity and review 3/12',
+    ],
+    'sore-throat': [
+      'Acute pharyngitis (Centor __, viral features): no antibiotic indicated; symptomatic treatment and safety netting given',
+      'Streptococcal pharyngitis (Centor __, rapid test positive): for amoxicillin 10 days; the reason for completing the course explained',
+      'Pharyngitis with airway red flags (__): peritonsillar abscess or epiglottitis considered; referred same day',
+      'Suspected infectious mononucleosis (posterior nodes, __): for monospot and CBC; amoxicillin avoided and contact sport restriction advised',
+    ],
+    dysuria: [
+      'Uncomplicated cystitis (typical symptoms, dipstick __): for nitrofurantoin 5 days; culture sent',
+      'Pyelonephritis (fever, flank pain, __): for oral ciprofloxacin 7 days and culture; admission criteria explained',
+      'Asymptomatic bacteriuria: no antibiotic indicated — treatment carries harm without benefit',
+      'Recurrent UTI (__ episodes this year): for post-void residual measurement; topical vaginal oestrogen discussed',
+      'Dysuria with visible haematuria: for urgent urology referral — malignancy must be excluded',
+    ],
+    'abdo-pain': [
+      'Dyspepsia (epigastric, no alarm features, age __): for a PPI trial 8/52 and H. pylori testing',
+      'Biliary colic (right upper quadrant, postprandial): for abdominal ultrasound and surgical referral',
+      'IBS meeting Rome IV criteria with no red flags: a positive diagnosis, made and explained; for dietary measures and an antispasmodic',
+      'Abdominal pain with peritonism (__): surgical abdomen; sent to ER',
+      'Abdominal pain in a woman of reproductive age: pregnancy test done today (__); ectopic pregnancy considered',
+    ],
+    'joint-pain': [
+      'Osteoarthritis (mechanical pattern, morning stiffness under 30 minutes): for paracetamol, topical NSAID and physiotherapy; oral NSAIDs avoided due to __',
+      'Inflammatory arthritis suspected (symmetrical, stiffness over 30 minutes, __ joints): for RF, anti-CCP and inflammatory markers with early rheumatology referral',
+      'Acute gout (__ joint, urate __): for a short anti-inflammatory course; urate-lowering therapy discussed',
+      'Hot swollen joint with fever: septic arthritis cannot be excluded; referred for urgent aspiration',
+      'Tendinopathy / soft tissue injury (__): for relative rest and a progressive loading programme',
+    ],
+    dyspnea: [
+      'Asthma exacerbation (__ of 4 control questions positive): for prednisolone 5 days and step-up; inhaler technique checked and corrected',
+      'COPD exacerbation (increased sputum purulence): for prednisolone and an antibiotic, 5 days each',
+      'Acute bronchitis (viral features, no focal signs): no antibiotic indicated; expected 2-3 week cough explained',
+      'Community-acquired pneumonia (focal signs, CRB-65 __): for amoxicillin and a chest X-ray',
+      'Dyspnoea with cardiac features (orthopnoea, PND, oedema): heart failure suspected; for BNP, ECG and echo',
+      'Chronic cough over 8 weeks: for chest X-ray; ACE inhibitor, reflux and asthma each considered',
+    ],
+    falls: [
+      'Recurrent falls (__ in __ months, Timed Up and Go __ seconds): multifactorial with a dominant drug contribution; for medication review, physiotherapy and home hazard assessment',
+      'Fall with loss of consciousness: this is syncope rather than a mechanical fall; for ECG, postural BP and cardiology referral',
+      'Single mechanical fall, no injury, gait and balance normal: for exercise advice and rescreening in 12/12',
+      'Fall with head injury on anticoagulation: for CT head regardless of how well the patient appears',
+      'Fall with suspected fracture (__): for X-ray and orthopaedic referral; osteoporosis treatment indicated regardless of DEXA',
+    ],
+    memory: [
+      'Cognitive impairment (Mini-Cog __/5, informant-corroborated functional decline over __): for a reversible cause screen and neuroimaging, with memory clinic referral',
+      'Subjective memory complaint with normal testing and no functional decline: reassurance given; for review 6/12',
+      'Cognitive change of acute onset: delirium until proven otherwise; for infection screen and medication review',
+      'Cognitive impairment with visual hallucinations and parkinsonism: Lewy body dementia considered — antipsychotics avoided',
+      'Cognitive impairment with ongoing driving: driving discussed and documented; advised to notify the licensing authority',
+    ],
+    routine: [
+      'Routine health check, asymptomatic: for age-appropriate screening as below',
+      'Cardiovascular primary prevention (ASCVD 10-year risk __%): for a statin discussion; lifestyle measures reinforced',
+      'Screening up to date and no new issues identified: no change today',
+      'Prediabetes (HbA1c __%): for a structured lifestyle intervention; HbA1c in 6/12',
+      'Immunisation reviewed: __ given today; remainder up to date',
     ],
   };
 
@@ -166,13 +285,7 @@
 
   const ASSESSMENT = [
     F('assessment_lines', 'Assessment', 'builder', { required: true,
-      groups: d => {
-        const g = [];
-        (d.conditions || []).forEach(c => { if (A[c]) g.push({ label: c, lines: A[c] }); });
-        g.push({ label: 'General', lines: A.generic });
-        g.push({ label: 'Defensive documentation', lines: A.defensive });
-        return g;
-      },
+      groups: d => assessGroupsFor(null, d),
       placeholder: 'Tap a line above to insert it, then edit the blanks. Or just write your own.',
       example: 'T2DM (uncontrolled, HbA1c 7.9%, rising from 7.2%): adherence gap identified; for dietitian referral and recheck 3/12',
       why: 'Every line: problem (qualifier + number): reasoning; for action. A line with no action is an unfinished thought (A1, A2).' }),
@@ -885,15 +998,30 @@
     fu: '4/52', fuFor: 'reassessment',
   });
 
+  /* Which assessment groups to offer: the visit's own library first, then one per
+     chronic problem selected, then the general and defensive sets. */
+  function assessGroupsFor(visit, d) {
+    const g = [];
+    if (visit && AV[visit.id]) g.push({ label: visit.label, lines: AV[visit.id] });
+    (d.conditions || []).forEach(c => { if (A[c]) g.push({ label: c, lines: A[c] }); });
+    g.push({ label: 'General', lines: A.generic });
+    g.push({ label: 'Defensive documentation', lines: A.defensive });
+    return g;
+  }
+
   /* assemble the full section list for a visit */
   function sectionsFor(v) {
+    /* bind this visit's assessment library into the shared field */
+    const assessment = ASSESSMENT.map(f => f.id === 'assessment_lines'
+      ? Object.assign({}, f, { groups: d => assessGroupsFor(v, d) })
+      : f);
     return [
       { id: 'header', title: 'Patient & problem list', fields: HEADER },
       { id: 'subjective', title: 'Subjective (History)',
         fields: (v.subjective || []).concat(SUBJ_TAIL) },
       { id: 'objective', title: 'Objective',
         fields: VITALS.concat([GENERAL_EXAM]).concat(v.exam || []).concat([LABS]) },
-      { id: 'assessment', title: 'Assessment', fields: ASSESSMENT },
+      { id: 'assessment', title: 'Assessment', fields: assessment },
       { id: 'plan', title: 'Plan', fields: PLAN },
     ];
   }

@@ -48,20 +48,34 @@
         ta.setSelectionRange(ta.value.length, ta.value.length);
       };
 
-      const groups = typeof f.groups === 'function' ? f.groups(DATA) : (f.groups || []);
-      groups.forEach(g => {
-        wrap.appendChild(el('div', 'builder__grp', esc(g.label)));
-        const box = el('div', 'chips');
-        g.lines.forEach(line => {
-          const c = el('button', 'chip chip--add', '+ ' + esc(line));
-          c.type = 'button';
-          c.addEventListener('click', () => insert(line));
-          box.appendChild(c);
+      /* The offered lines depend on answers given elsewhere in the form (which problems
+         are being reviewed), so they are rebuilt whenever that set changes — not once
+         at construction, which left the chips stale until a page reload. */
+      const groupBox = el('div');
+      let lastSig = null;
+      const renderGroups = () => {
+        const groups = typeof f.groups === 'function' ? f.groups(DATA) : (f.groups || []);
+        const sig = groups.map(g => g.label + ':' + g.lines.length).join('|');
+        if (sig === lastSig) return;
+        lastSig = sig;
+        groupBox.innerHTML = '';
+        groups.forEach(g => {
+          groupBox.appendChild(el('div', 'builder__grp', esc(g.label)));
+          const box = el('div', 'chips');
+          g.lines.forEach(line => {
+            const c = el('button', 'chip chip--add', '+ ' + esc(line));
+            c.type = 'button';
+            c.addEventListener('click', () => insert(line));
+            box.appendChild(c);
+          });
+          groupBox.appendChild(box);
         });
-        wrap.appendChild(box);
-      });
-      wrap.appendChild(el('div', 'builder__grp', 'Other — write your own'));
+        groupBox.appendChild(el('div', 'builder__grp', 'Other — write your own'));
+      };
+      renderGroups();
+      wrap.appendChild(groupBox);
       wrap.appendChild(ta);
+      wrap._refreshBuilder = renderGroups;
       return wrap;
     }
 
@@ -215,7 +229,10 @@
     /* Re-evaluate every `when` on each answer, so questions appear the moment they
        become relevant and disappear again when they stop being. */
     const update = () => {
-      rendered.forEach(r => { r.node.hidden = !window.noteFieldVisible(r.f, DATA); });
+      rendered.forEach(r => {
+        r.node.hidden = !window.noteFieldVisible(r.f, DATA);
+        if (r.node._refreshBuilder) r.node._refreshBuilder();
+      });
       secNodes.forEach(sn => {
         const anyVisible = sn.fields.some(f => window.noteFieldVisible(f, DATA));
         sn.title.hidden = !anyVisible;
