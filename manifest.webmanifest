@@ -1,9 +1,9 @@
 {
-  "name": "مساعد طبيب الأسرة",
-  "short_name": "طبيب الأسرة",
-  "description": "مرجع سريع لطبيب الأسرة يعمل بدون إنترنت: حاسبات سريرية، أدلة مختصرة، وصفات جاهزة، تطعيمات، وفحوصات وقائية.",
-  "lang": "ar",
-  "dir": "rtl",
+  "name": "Family Medicine Assistant",
+  "short_name": "FM Assistant",
+  "description": "Offline quick reference for family medicine: progress notes, clinical calculators, concise guides and ready prescriptions.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -18,8 +18,8 @@
     { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
   ],
   "shortcuts": [
-    { "name": "العلامات الحمراء", "url": "./index.html#/tools/redflags" },
-    { "name": "جرعة طفل", "url": "./index.html#/calc/peds-dose" },
-    { "name": "الوصفات الجاهزة", "url": "./index.html#/rx" }
+    { "name": "Write a note", "url": "./index.html#/note" },
+    { "name": "Red flags", "url": "./index.html#/tools/redflags" },
+    { "name": "Prescriptions", "url": "./index.html#/rx" }
   ]
 }

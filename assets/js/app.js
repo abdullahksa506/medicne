@@ -1,4 +1,4 @@
-/* مساعد طبيب الأسرة — منطق التطبيق */
+/* Family Medicine Assistant — application logic */
 (function () {
   'use strict';
 
@@ -10,7 +10,7 @@
   const searchInput = $('#searchInput');
   const clearSearch = $('#clearSearch');
 
-  /* ---------- أدوات مساعدة ---------- */
+  /* ---------- helpers ---------- */
   const el = (tag, cls, html) => {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -42,9 +42,9 @@
         document.execCommand('copy');
         ta.remove();
       }
-      toast('تم النسخ');
+      toast('Copied');
     } catch (e) {
-      toast('تعذّر النسخ — انسخ يدوياً');
+      toast('Could not copy — select and copy manually');
     }
   }
 
@@ -56,7 +56,7 @@
     }
   }
 
-  /* ---------- الوضع الليلي ---------- */
+  /* ---------- dark mode ---------- */
   const THEME_KEY = 'fm.theme';
   function applyTheme(t) {
     if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
@@ -75,7 +75,7 @@
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
   });
 
-  /* ---------- الأخيرة ---------- */
+  /* ---------- recently used ---------- */
   const RECENT_KEY = 'fm.recent';
   function getRecent() {
     try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; }
@@ -88,7 +88,7 @@
     } catch (e) {}
   }
 
-  /* ---------- فهرس البحث ---------- */
+  /* ---------- search index ---------- */
   const INDEX = [];
   const addIdx = (arr, type, route, kindLabel) => (arr || []).forEach(o => INDEX.push({
     id: o.id, type, kindLabel,
@@ -96,15 +96,14 @@
     route: route(o),
     hay: [o.title, o.sub || '', (o.tags || []).join(' '), o.cat || ''].join(' ').toLowerCase(),
   }));
-  addIdx(window.CALCS, 'calc', o => '#/calc/' + o.id, 'حاسبة');
-  addIdx(window.GUIDES, 'guide', o => '#/guide/' + o.id, 'دليل');
-  addIdx(window.RX, 'rx', o => '#/rx/' + o.id, 'وصفة');
-  addIdx(window.TOOLS, 'tool', o => '#/tools/' + o.id, 'أداة');
-  addIdx(window.HANDOUTS, 'handout', o => '#/handout/' + o.id, 'نصائح للمريض');
+  addIdx(window.CALCS, 'calc', o => '#/calc/' + o.id, 'calculator');
+  addIdx(window.GUIDES, 'guide', o => '#/guide/' + o.id, 'guide');
+  addIdx(window.RX, 'rx', o => '#/rx/' + o.id, 'prescription');
+  addIdx(window.TOOLS, 'tool', o => '#/tools/' + o.id, 'tool');
+  addIdx(window.HANDOUTS, 'handout', o => '#/handout/' + o.id, 'handout');
 
-  const norm = s => String(s).toLowerCase()
-    .replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
-    .replace(/[ًٌٍَُِّْ]/g, '');
+  /* fold case and strip punctuation so search tolerates loose spelling */
+  const norm = s => String(s).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
   INDEX.forEach(x => { x.hay = norm(x.hay); });
 
@@ -127,7 +126,7 @@
 
   const byId = (arr, id) => (arr || []).find(o => o.id === id);
 
-  /* ---------- عرض الكتل (الأدلة والأدوات) ---------- */
+  /* ---------- block renderer (guides and tools) ---------- */
   function renderBlocks(blocks, host) {
     let card = null;
     const flush = () => { if (card && card.childNodes.length) host.appendChild(card); card = null; };
@@ -168,7 +167,7 @@
       } else if (b.copy) {
         const box = el('div', 'copybox', esc(b.copy));
         ensure().appendChild(box);
-        const btn = el('button', 'btn btn--ghost', 'نسخ القالب');
+        const btn = el('button', 'btn btn--ghost', 'Copy template');
         btn.addEventListener('click', () => copyText(b.copy));
         ensure().appendChild(btn);
         flush();
@@ -177,48 +176,33 @@
     flush();
   }
 
-  /* ---------- الصفحات ---------- */
-  const CALC_CATS = ['كبار السن', 'أساسية', 'قلب', 'عدوى', 'نفسية', 'مخبرية', 'نساء', 'وقاية'];
-
-  const geriOf = arr => (arr || []).filter(o => o.geri);
+  /* ---------- pages ---------- */
+  const CALC_CATS = ['Core', 'Cardiovascular', 'Infection', 'Mental health', 'Laboratory', "Women's health", 'Prevention'];
 
   function pageHome() {
-    setTop('مساعد طبيب الأسرة', false);
+    setTop('Family Medicine Assistant', false);
     showSearch(true);
 
-    const geriCount = geriOf(window.CALCS).length + geriOf(window.GUIDES).length
-      + geriOf(window.TOOLS).length + geriOf(window.RX).length + geriOf(window.HANDOUTS).length;
-
-    const feat = el('a', 'feature');
-    feat.href = '#/geri';
+    const feat = el('a', 'feature feature--alt');
+    feat.href = '#/note';
     feat.innerHTML = `<span class="feature__ic"><svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="10" cy="5" r="2.5"/><path d="M10 9v11M10 13l4 2M6 20l4-7M17 10v11M17 12h-3"/></svg></span>
+        <path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h4"/></svg></span>
       <span class="feature__body">
-        <span class="feature__t">كبار السن</span>
-        <span class="feature__d">التقييم الشامل، الهشاشة، الخرف، السقوط، ومراجعة الأدوية — ${geriCount} مادة</span>
+        <span class="feature__t">Write a progress note</span>
+        <span class="feature__d">Adaptive form, house format, rubric and teaching feedback</span>
       </span><span class="row__chev">${chev}</span>`;
     view.appendChild(feat);
 
-    const featNote = el('a', 'feature feature--alt');
-    featNote.href = '#/note';
-    featNote.innerHTML = `<span class="feature__ic"><svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h4"/></svg></span>
-      <span class="feature__body">
-        <span class="feature__t">Progress Note</span>
-        <span class="feature__d">كتابة تقرير العيادة بصيغة القسم، مع تقييم وتغذية راجعة تعلّمك تكتبه بنفسك</span>
-      </span><span class="row__chev">${chev}</span>`;
-    view.appendChild(featNote);
-
     const quick = [
-      { t: 'مقياس الهشاشة', d: 'يوجّه كل قرار آخر', r: '#/calc/cfs', ic: '<path d="M4 19h16M7 19V9M12 19V5M17 19v-7"/>' },
-      { t: 'أدوية يُتجنّب وصفها', d: 'معايير Beers', r: '#/tools/beers', ic: '<path d="M9 3h6v4H9zM7 7h10l1 14H6z"/><path d="M9 12h6"/>' },
-      { t: 'الهذيان', d: 'مقياس 4AT في دقيقتين', r: '#/calc/4at', ic: '<path d="M12 3a6 6 0 016 6c0 3-2 4-2 7H8c0-3-2-4-2-7a6 6 0 016-6z"/><path d="M9 20h6"/>' },
-      { t: 'خطر السقوط', d: 'فرز وعوامل قابلة للتعديل', r: '#/calc/falls-risk', ic: '<path d="M13 4a1.5 1.5 0 100-.01M11 21l1-6-3-3 1-5 4 3 3 1"/>' },
-      { t: 'العلامات الحمراء', d: 'ما لا يجوز تفويته', r: '#/tools/redflags', ic: '<path d="M4 4v16M4 5h13l-2 4 2 4H4"/>' },
-      { t: 'قوالب التوثيق', d: 'ملاحظات جاهزة', r: '#/tools/notes', ic: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5"/>' },
+      { t: 'Red flags', d: 'What must not be missed', r: '#/tools/redflags', ic: '<path d="M4 4v16M4 5h13l-2 4 2 4H4"/>' },
+      { t: 'Renal function', d: 'eGFR and dose adjustment', r: '#/calc/egfr', ic: '<path d="M12 3c4 0 7 3 7 7 0 5-4 8-7 11-3-3-7-6-7-11 0-4 3-7 7-7z"/>' },
+      { t: 'Cardiovascular risk', d: '10-year ASCVD', r: '#/calc/ascvd', ic: '<path d="M20 12h-4l-2 5-4-10-2 5H4"/>' },
+      { t: 'Antibiotics', d: 'First-line choice and duration', r: '#/tools/abx', ic: '<path d="M9 3h6v4H9zM7 7h10l1 14H6z"/><path d="M9 12h6"/>' },
+      { t: 'Documentation templates', d: 'Ready notes to copy', r: '#/tools/notes', ic: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5"/>' },
+      { t: 'Screening', d: 'What to check and when', r: '#/tools/screening', ic: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>' },
     ];
 
-    view.appendChild(el('div', 'sec-title', 'وصول سريع'));
+    view.appendChild(el('div', 'sec-title', 'Quick access'));
     const g = el('div', 'grid');
     quick.forEach(q => {
       const a = el('a', 'tile');
@@ -231,21 +215,22 @@
 
     const recent = getRecent().map(r => INDEX.find(x => x.route === r)).filter(Boolean);
     if (recent.length) {
-      view.appendChild(el('div', 'sec-title', 'استخدمتها مؤخراً'));
+      view.appendChild(el('div', 'sec-title', 'Recently used'));
       view.appendChild(rowList(recent));
     }
 
-    view.appendChild(el('div', 'sec-title', 'الأقسام'));
+    view.appendChild(el('div', 'sec-title', 'Sections'));
     view.appendChild(rowList([
-      { title: 'الحاسبات السريرية', sub: window.CALCS.length + ' حاسبة', route: '#/calc' },
-      { title: 'الأدلة السريعة', sub: window.GUIDES.length + ' حالة', route: '#/guide' },
-      { title: 'الوصفات الجاهزة', sub: window.RX.length + ' وصفة قابلة للنسخ', route: '#/rx' },
-      { title: 'نصائح للمريض', sub: window.HANDOUTS.length + ' ورقة إرشادية', route: '#/handout' },
-      { title: 'أدوات مرجعية', sub: 'تطعيمات، فحوصات، مضادات حيوية، توثيق', route: '#/tools' },
+      { title: 'Clinical calculators', sub: window.CALCS.length + ' calculators', route: '#/calc' },
+      { title: 'Clinical guides', sub: window.GUIDES.length + ' conditions', route: '#/guide' },
+      { title: 'Prescriptions', sub: window.RX.length + ' ready to copy', route: '#/rx' },
+      { title: 'Patient handouts', sub: window.HANDOUTS.length + ' instruction sheets', route: '#/handout' },
+      { title: 'Reference tools', sub: 'Immunisation, screening, antibiotics, documentation', route: '#/tools' },
     ]));
 
     view.appendChild(el('p', 'disclaimer',
-      'أداة دعم قرار للاستخدام من قِبل الكوادر الصحية المؤهلة، ولا تُغني عن الحكم السريري.<br>تحقّق من الجرعات والبروتوكولات المعتمدة محلياً قبل التطبيق. تعمل بدون إنترنت بعد أول فتح.'));
+      'Clinical decision support for qualified healthcare professionals. It does not replace clinical judgement.<br>' +
+      'Verify doses and protocols against your local approved protocol before use. Works offline after the first load.'));
   }
 
   function rowList(items) {
@@ -260,30 +245,6 @@
       list.appendChild(a);
     });
     return list;
-  }
-
-  function pageGeri() {
-    setTop('كبار السن', false);
-    showSearch(true);
-
-    const sections = [
-      { t: 'مقاييس التقييم', arr: geriOf(window.CALCS), pre: '#/calc/' },
-      { t: 'أدلة سريرية', arr: geriOf(window.GUIDES), pre: '#/guide/' },
-      { t: 'أدوات مرجعية', arr: geriOf(window.TOOLS), pre: '#/tools/' },
-      { t: 'وصفات', arr: geriOf(window.RX), pre: '#/rx/' },
-      { t: 'إرشادات للأسرة ومقدّم الرعاية', arr: geriOf(window.HANDOUTS), pre: '#/handout/' },
-    ];
-
-    view.appendChild(el('div', 'note',
-      'ابدأ بـ <b>مقياس الهشاشة</b> — درجته تحدّد أهداف الضغط والسكر، وأي دواء يستحق الاستمرار، ومتى يبدأ نقاش أهداف الرعاية.'));
-
-    sections.forEach(s => {
-      if (!s.arr.length) return;
-      view.appendChild(el('div', 'sec-title', s.t));
-      view.appendChild(rowList(s.arr.map(o => ({
-        title: o.title, sub: o.sub || '', route: s.pre + o.id,
-      }))));
-    });
   }
 
   function pageList(title, arr, prefix, groupBy) {
@@ -319,27 +280,27 @@
     if (r.sub) view.appendChild(el('p', 'disclaimer', r.sub));
 
     const card = el('div', 'card');
-    card.appendChild(el('h3', null, 'الوصفة'));
+    card.appendChild(el('h3', null, 'Prescription'));
     card.appendChild(el('div', 'copybox', esc(r.text)));
     view.appendChild(card);
 
     const btns = el('div', 'btnrow');
-    const c = el('button', 'btn btn--row', 'نسخ الوصفة');
+    const c = el('button', 'btn btn--row', 'Copy prescription');
     c.addEventListener('click', () => copyText(r.text));
-    const s = el('button', 'btn btn--row btn--ghost', 'مشاركة');
+    const s = el('button', 'btn btn--row btn--ghost', 'Share');
     s.addEventListener('click', () => shareText(r.title, r.title + '\n\n' + r.text));
     btns.append(c, s);
     view.appendChild(btns);
 
     if (r.notes && r.notes.length) {
       const n = el('div', 'card');
-      n.appendChild(el('h3', null, 'ملاحظات'));
+      n.appendChild(el('h3', null, 'Notes'));
       const ul = el('ul');
       r.notes.forEach(x => ul.appendChild(el('li', null, x)));
       n.appendChild(ul);
       view.appendChild(n);
     }
-    view.appendChild(el('p', 'disclaimer', 'راجع الجرعة والحساسية والتداخلات الدوائية وحالة الكلى والكبد قبل الصرف.'));
+    view.appendChild(el('p', 'disclaimer', 'Check the dose, allergies, interactions and renal or hepatic function before prescribing.'));
   }
 
   function pageHandout(id) {
@@ -348,20 +309,20 @@
     setTop(h.title, true);
     showSearch(false);
     const plain = h.text.replace(/<\/?b>/g, '');
-    view.appendChild(el('div', 'note', 'نص جاهز للإرسال للمريض أو الطباعة.'));
+    view.appendChild(el('div', 'note', 'Ready to send to the patient or print.'));
     const card = el('div', 'card');
     card.appendChild(el('div', 'copybox', esc(plain)));
     view.appendChild(card);
     const btns = el('div', 'btnrow');
-    const c = el('button', 'btn btn--row', 'نسخ');
+    const c = el('button', 'btn btn--row', 'Copy');
     c.addEventListener('click', () => copyText(plain));
-    const s = el('button', 'btn btn--row btn--ghost', 'إرسال');
+    const s = el('button', 'btn btn--row btn--ghost', 'Send');
     s.addEventListener('click', () => shareText(h.title, plain));
     btns.append(c, s);
     view.appendChild(btns);
   }
 
-  /* ---------- الحاسبات ---------- */
+  /* ---------- calculators ---------- */
   function pageCalc(id) {
     const c = byId(window.CALCS, id);
     if (!c) return pageMissing();
@@ -373,14 +334,14 @@
 
   function resultBox() {
     const box = el('div', 'result result--empty');
-    box.innerHTML = '<div class="result__v">أكمل الحقول لعرض النتيجة</div>';
+    box.innerHTML = '<div class="result__v">Fill the fields to see the result</div>';
     return box;
   }
 
   function paintResult(box, res) {
     if (!res) {
       box.className = 'result result--empty';
-      box.innerHTML = '<div class="result__v">أكمل الحقول لعرض النتيجة</div>';
+      box.innerHTML = '<div class="result__v">Fill the fields to see the result</div>';
       return;
     }
     box.className = 'result';
@@ -434,7 +395,7 @@
         wrap.appendChild(seg);
       } else if (f.type === 'select') {
         const sel = el('select');
-        sel.appendChild(el('option', null, '— اختر —'));
+        sel.appendChild(el('option', null, '— select —'));
         f.opts.forEach(o => {
           const op = el('option', null, esc(o.t));
           op.value = o.v;
@@ -463,8 +424,8 @@
     const card = el('div', 'card');
     const box = resultBox();
 
-    /* بعض المقاييس تكون الصفر فيها أسوأ نتيجة (الاستقلالية، التغذية، الإدراك)،
-       فلا تُعرض نتيجة قبل أن يُدخل الطبيب شيئاً حتى لا تبدو النتيجة الابتدائية حكماً. */
+    /* In some scores zero is the worst end, not the empty state. Those show no
+       result until the first answer, so the initial view never reads as a verdict. */
     let touched = !c.needsInput;
     const total = () => Object.values(state).reduce((a, b) => a + (+b || 0), 0);
     const run = () => {
@@ -474,9 +435,9 @@
       const lines = [band.note];
       if (c.foot) lines.push(c.foot);
       if (c.items.some(i => i.flag) && c.items.filter(i => i.flag).some(i => (+state[i.id] || 0) > 0)) {
-        lines.unshift('⚠ إجابة إيجابية على بند خطر إيذاء النفس — يستوجب تقييماً مباشراً الآن.');
+        lines.unshift('⚠ Positive answer on a self-harm item — assess risk directly, now.');
       }
-      paintResult(box, { v: t, u: 'نقطة', i: band.label, kind: band.kind, lines });
+      paintResult(box, { v: t, u: t === 1 ? 'point' : 'points', i: band.label, kind: band.kind, lines });
     };
 
     c.items.forEach(it => {
@@ -535,43 +496,43 @@
     if (c.intro) view.appendChild(el('div', 'note', c.intro));
     if (c.scale) {
       view.appendChild(el('div', 'note',
-        'اختر لكل بند: ' + c.scale.map((s, i) => `<b>${i}</b> ${s}`).join(' · ')));
+        'For each item choose: ' + c.scale.map((s, i) => `<b>${i}</b> ${s}`).join(' · ')));
     }
     view.appendChild(card);
 
-    const reset = el('button', 'btn btn--ghost', 'إعادة تعيين');
+    const reset = el('button', 'btn btn--ghost', 'Reset');
     reset.addEventListener('click', () => { render(); });
     view.appendChild(reset);
     view.appendChild(box);
     run();
   }
 
-  /* ---------- البحث ---------- */
+  /* ---------- search ---------- */
   function pageSearch(q) {
-    setTop('نتائج البحث', true);
+    setTop('Search results', true);
     showSearch(true);
     searchInput.value = q;
     const res = search(q);
     if (!res.length) {
       view.appendChild(el('div', 'empty',
         '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-        '<div>لا توجد نتائج لـ «' + esc(q) + '»</div>'));
+        '<div>No results for &ldquo;' + esc(q) + '&rdquo;</div>'));
       return;
     }
-    view.appendChild(el('div', 'sec-title', res.length + ' نتيجة'));
+    view.appendChild(el('div', 'sec-title', res.length + (res.length === 1 ? ' result' : ' results')));
     view.appendChild(rowList(res));
   }
 
   function pageMissing() {
-    setTop('غير موجود', true);
+    setTop('Not found', true);
     showSearch(false);
-    view.appendChild(el('div', 'empty', 'الصفحة المطلوبة غير موجودة.'));
+    view.appendChild(el('div', 'empty', 'That page does not exist.'));
   }
 
-  /* ---------- الهيكل العام ---------- */
+  /* ---------- shell ---------- */
   function setTop(title, showBack) {
     topTitle.textContent = title;
-    document.title = title === 'مساعد طبيب الأسرة' ? title : title + ' — مساعد طبيب الأسرة';
+    document.title = title === 'Family Medicine Assistant' ? title : title + ' — Family Medicine Assistant';
     backBtn.hidden = !showBack;
   }
   function showSearch(on) { searchWrap.hidden = !on; }
@@ -597,35 +558,28 @@
       return;
     }
 
-    setTab(sec === 'handout' ? 'rx' : sec === 'geri' ? 'home' : sec);
+    setTab(sec === 'handout' ? 'rx' : sec);
 
     switch (sec) {
       case 'note': {
         const sub = parts[1], arg = parts[2];
         if (sub === 'new' && arg) window.NoteUI.form(view, setTop, showSearch, arg);
-        else if (sub === 'new') window.NoteUI.picker(view, setTop, showSearch);
         else if (sub === 'result') window.NoteUI.result(view, setTop, showSearch, toast, copyText);
-        else if (sub === 'critique') window.NoteUI.critique(view, setTop, showSearch, toast, copyText);
-        else if (sub === 'expand') window.NoteUI.expand(view, setTop, showSearch, toast, copyText);
-        else if (sub === 'drill') window.NoteUI.drill(view, setTop, showSearch, toast);
-        else window.NoteUI.hub(view, setTop, showSearch);
+        else window.NoteUI.picker(view, setTop, showSearch);
         break;
       }
-      case 'geri':
-        pageGeri();
-        break;
       case 'calc':
         if (id) { pushRecent(hash); pageCalc(id); }
-        else pageList('الحاسبات السريرية', sortByCat(window.CALCS, CALC_CATS), '#/calc/', true);
+        else pageList('Clinical calculators', sortByCat(window.CALCS, CALC_CATS), '#/calc/', true);
         break;
       case 'guide':
         if (id) { pushRecent(hash); pageGuide(id); }
-        else pageList('الأدلة السريعة', window.GUIDES, '#/guide/', true);
+        else pageList('Clinical guides', window.GUIDES, '#/guide/', true);
         break;
       case 'rx':
         if (id) { pushRecent(hash); pageRx(id); }
         else {
-          setTop('الوصفات الجاهزة', false);
+          setTop('Prescriptions', false);
           showSearch(true);
           const cats = [];
           window.RX.forEach(o => { if (!cats.includes(o.cat)) cats.push(o.cat); });
@@ -634,18 +588,18 @@
             view.appendChild(rowList(window.RX.filter(o => o.cat === cat)
               .map(o => ({ title: o.title, sub: o.sub, route: '#/rx/' + o.id }))));
           });
-          view.appendChild(el('div', 'sec-title', 'نصائح للمريض'));
+          view.appendChild(el('div', 'sec-title', 'Patient handouts'));
           view.appendChild(rowList(window.HANDOUTS
-            .map(o => ({ title: o.title, sub: 'نص جاهز للإرسال', route: '#/handout/' + o.id }))));
+            .map(o => ({ title: o.title, sub: 'Ready to send', route: '#/handout/' + o.id }))));
         }
         break;
       case 'handout':
         if (id) { pushRecent(hash); pageHandout(id); }
-        else pageList('نصائح للمريض', window.HANDOUTS.map(h => ({ ...h, sub: 'نص جاهز للإرسال' })), '#/handout/', false);
+        else pageList('Patient handouts', window.HANDOUTS.map(h => ({ ...h, sub: 'Ready to send' })), '#/handout/', false);
         break;
       case 'tools':
         if (id) { pushRecent(hash); pageGuide(id); }
-        else pageList('أدوات مرجعية', window.TOOLS, '#/tools/', false);
+        else pageList('Reference tools', window.TOOLS, '#/tools/', false);
         break;
       default:
         pageHome();
@@ -656,7 +610,7 @@
     return [...arr].sort((a, b) => order.indexOf(a.cat) - order.indexOf(b.cat));
   }
 
-  /* ---------- الأحداث ---------- */
+  /* ---------- events ---------- */
   backBtn.addEventListener('click', () => {
     if (history.length > 1) history.back();
     else location.hash = '#/home';
@@ -683,7 +637,7 @@
   window.addEventListener('hashchange', render);
   render();
 
-  /* ---------- العمل بدون إنترنت ---------- */
+  /* ---------- offline ---------- */
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});

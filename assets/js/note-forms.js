@@ -90,13 +90,91 @@
     example: 'HbA1c 7.9% (was 7.2% six months ago)\nLDL 3.4, eGFR 78, TSH 2.1',
     why: 'Put prior values beside current ones — direction is the finding, not the number (A3).' });
 
+  /* ---------- ready-made Assessment lines ----------
+     Tapping one appends it to the textarea below, which stays fully editable.
+     Speed when a template fits; a blank sheet when nothing does. */
+  const A = {
+    'Diabetes': [
+      'T2DM (controlled, HbA1c __%): no change today',
+      'T2DM (uncontrolled, HbA1c __%, rising from __%): adherence gap identified; for dietitian referral and recheck 3/12',
+      'T2DM (uncontrolled, HbA1c __%): for Metformin increased to __; recheck 3/12',
+      'T2DM (overtreated, HbA1c __%): for dose reduction and recheck 6/52',
+      'Diabetic foot screening: protective sensation intact, pulses palpable; no change today',
+      'Diabetic retinopathy screening overdue: for ophthalmology referral',
+    ],
+    'Hypertension': [
+      'HTN (controlled, __/__, home readings consistent): no change today',
+      'HTN (uncontrolled, __/__ despite __): for dose increase and home BP diary, recheck 4/52',
+      'HTN (uncontrolled, __/__): second agent added — __; renal profile and K in 2/52',
+      'HTN with postural drop (__/__ lying, __/__ standing): for dose reduction given fall risk',
+    ],
+    'Dyslipidaemia': [
+      'Dyslipidaemia (LDL __ on __): at target; no change today',
+      'Dyslipidaemia (LDL __, above target on __): for high-intensity statin; lipid panel 3/12',
+      'Statin-associated muscle symptoms (CK __): for washout 2/52 then rechallenge with __',
+    ],
+    'Hypothyroidism': [
+      'Hypothyroidism (TSH __ on Levothyroxine __ mcg): euthyroid; no change today',
+      'Hypothyroidism (TSH __, above target): for Levothyroxine increased to __ mcg; TSH in 6/52',
+    ],
+    'Asthma / COPD': [
+      'Asthma (controlled on __, no night waking, reliever __x/week): no change today',
+      'Asthma (uncontrolled, __ of 4 control questions positive): technique checked and corrected; for step up to __, review 4/52',
+      'COPD (__ exacerbations in the last year): for inhaled therapy review and pulmonary rehabilitation referral',
+    ],
+    'CKD': [
+      'CKD (eGFR __, was __ twelve months ago, ACR __): stable; for annual monitoring',
+      'CKD (eGFR __, declining): drug doses reviewed and adjusted; for nephrology referral',
+    ],
+    'IHD / AF': [
+      'IHD (stable, no exertional symptoms, on __): no change today',
+      'AF (rate controlled, __ bpm, CHA2DS2-VASc __, on __): no change today',
+    ],
+    'Osteoporosis': [
+      'Osteoporosis (T-score __, on __): tolerating treatment; calcium and vitamin D replete',
+      'Fragility fracture on treatment: for treatment review and DEXA',
+    ],
+    'Obesity': ['Obesity (BMI __): for structured weight management; 5-10% target discussed'],
+    generic: [
+      '__ (__): __; for __',
+      '__ (stable): no change today',
+      'Reassuring history and examination, no red flags: for symptomatic management and safety netting',
+      'Diagnostic uncertainty at this stage: for __ and reassessment in __',
+    ],
+    defensive: [
+      '__ avoided due to __',
+      'No indication for imaging at this stage',
+      '__: explained in detail, but still insisting; not ordered, rationale documented; __ offered and accepted',
+      '__: declined after discussion; risks explained and documented, __ offered instead',
+    ],
+  };
+
+  const P = {
+    labs: ['CBC', 'HbA1c', 'Lipid profile', 'Renal profile and electrolytes', 'LFT', 'TSH',
+           'Urine ACR', 'Vitamin D', 'Ferritin', 'Urine analysis and culture', 'ECG today', 'Chest X-ray'],
+    referrals: ['Dietitian referral', 'Ophthalmology referral', 'Cardiology referral', 'Nephrology referral',
+                'Physiotherapy referral', 'Endocrine referral', 'Smoking cessation clinic referral',
+                'Psychology / counselling referral', 'Surgical referral'],
+    meds: ['Continue current medications', 'Dose increased: __', 'Dose reduced: __',
+           'New medication started: __', 'Medication stopped: __', 'Prescription refilled for 3/12'],
+    counselling: ['Weight management advice given', 'Smoking cessation advice given',
+                  'Exercise prescription discussed', 'Sick day rules explained',
+                  'Home BP monitoring explained', 'Inhaler technique demonstrated and checked',
+                  'Hypoglycaemia recognition and management explained', 'Influenza vaccine given'],
+  };
+
   const ASSESSMENT = [
-    F('assessment_lines', 'Assessment — one line per problem', 'textarea', { required: true,
-      example: 'T2DM (uncontrolled, HbA1c 7.9%, rising from 7.2%): adherence confirmed, dietary factors the likely driver; for dietitian referral and recheck in 3/12\nHTN (controlled, 128/78): no change today',
+    F('assessment_lines', 'Assessment', 'builder', { required: true,
+      groups: d => {
+        const g = [];
+        (d.conditions || []).forEach(c => { if (A[c]) g.push({ label: c, lines: A[c] }); });
+        g.push({ label: 'General', lines: A.generic });
+        g.push({ label: 'Defensive documentation', lines: A.defensive });
+        return g;
+      },
+      placeholder: 'Tap a line above to insert it, then edit the blanks. Or just write your own.',
+      example: 'T2DM (uncontrolled, HbA1c 7.9%, rising from 7.2%): adherence gap identified; for dietitian referral and recheck 3/12',
       why: 'Every line: problem (qualifier + number): reasoning; for action. A line with no action is an unfinished thought (A1, A2).' }),
-    F('deliberate_non_action', 'Anything you deliberately did NOT do?', 'text', { required: false,
-      example: 'NSAIDs avoided due to CKD 3a',
-      why: 'Deliberate non-action documented with its reason is what separates a decision from an omission (A5).' }),
     F('disagreement', 'Did the patient insist on or decline anything?', 'select', { required: true,
       options: ['No', 'Insisted on something', 'Declined something'], example: 'No',
       why: 'If yes, the note must record all four parts: what you explained, that they disagreed, what you did, what you offered instead (A6).' }),
@@ -111,14 +189,21 @@
   ];
 
   const PLAN = [
-    F('plan_items', 'Investigations / referrals / prescriptions', 'textarea', { required: true,
-      example: 'CBC, HbA1c, lipid profile, renal profile\nDietitian referral\nMetformin 1g BD continued',
+    F('plan_items', 'Plan', 'builder', { required: true,
+      groups: () => [
+        { label: 'Investigations', lines: P.labs },
+        { label: 'Referrals', lines: P.referrals },
+        { label: 'Medications', lines: P.meds },
+        { label: 'Counselling and prevention', lines: P.counselling },
+      ],
+      placeholder: 'Tap what you ordered, then add anything else in your own words.',
+      example: 'CBC, HbA1c, lipid profile\nDietitian referral\nMetformin increased to 1g BD',
       why: 'One item per line. This is the only place a reader learns what was actually ordered.' }),
     F('er_instructions', 'ER instructions — when must they come back immediately?', 'text', { required: true,
       example: 'in case of chest pain, syncope, or severe shortness of breath',
       why: 'Safety netting appears in every plan (R5). Generic wording protects nobody — name the symptoms.' }),
     F('follow_up', 'Follow up after', 'select', { required: true, allowCustom: true,
-      options: ['1/52', '2/52', '4/52', '6/52', '3/12', '6/12', '1/12', '12/12'],
+      options: ['1/52', '2/52', '4/52', '6/52', '1/12', '3/12', '6/12', '12/12'],
       example: '3/12',
       why: 'House interval format: 3/12 is three months, 4/52 is four weeks.' }),
     F('follow_up_for', 'Follow up for', 'text', { required: false, example: 'lab results review',
@@ -131,8 +216,8 @@
   const visit = (o) => { V.push(o); };
 
   visit({
-    id: 'chronic', label: 'Chronic disease follow-up', ar: 'متابعة مرض مزمن',
-    tags: ['diabetes', 'dm', 'htn', 'hypertension', 'chronic', 'سكري', 'ضغط', 'متابعة'],
+    id: 'chronic', label: 'Chronic disease follow-up',
+    tags: ['diabetes', 'dm', 'htn', 'hypertension', 'chronic'],
     reason: 'follow up', purpose: 'for lab results',
     subjective: [
       F('conditions', 'Which problems are you reviewing today?', 'multiselect', { required: true, allowCustom: true,
@@ -143,7 +228,7 @@
       F('control_status', 'Control status of each problem', 'textarea', { required: true,
         example: 'T2DM: HbA1c 7.9%, rising from 7.2%. Missing evening Metformin dose 2-3 times/week.\nHTN: home readings 125-135/75-85',
         why: 'Direction matters more than the value. "Rising from 7.2%" tells the next reader what to do (A3).' }),
-      F('adherence', 'Medication adherence', 'select', { required: true,
+      F('adherence', 'Medication adherence', 'select', { required: true, allowCustom: true,
         options: ['Taking all medications as prescribed', 'Admits missing doses occasionally',
                   'Admits missing doses frequently', 'Self-discontinued a medication'],
         example: 'Admits missing doses occasionally',
@@ -162,7 +247,7 @@
                   'Monofilament sensation intact', 'None up to date'],
         example: 'Foot exam done today, fundus exam up to date',
         why: 'Complication screening is the part of chronic care that silently lapses for years.' }),
-      F('dm_symptoms', 'Osmotic symptoms', 'multiselect', { required: false,
+      F('dm_symptoms', 'Osmotic symptoms', 'multiselect', { required: false, allowCustom: true,
         when: picked('conditions', 'Diabetes'),
         options: ['Polyuria', 'Polydipsia', 'Unintentional weight loss', 'Blurred vision', 'New foot numbness', NONE],
         redFlags: ['Unintentional weight loss', 'New foot numbness'],
@@ -174,7 +259,7 @@
         when: picked('conditions', 'Hypertension'),
         example: '125-135 / 75-85, taken twice daily for a week',
         why: 'Home readings predict outcomes better than clinic readings and settle white-coat hypertension.' }),
-      F('htn_sx', 'Symptoms on antihypertensives', 'multiselect', { required: false,
+      F('htn_sx', 'Symptoms on antihypertensives', 'multiselect', { required: false, allowCustom: true,
         when: picked('conditions', 'Hypertension'),
         options: ['Dizziness on standing', 'Ankle swelling', 'Dry cough', 'Fatigue', NONE],
         redFlags: ['Dizziness on standing'],
@@ -191,7 +276,7 @@
         why: 'Most statin "intolerance" is dose- or drug-specific and recoverable — but only if you record it.' }),
 
       /* --- thyroid --- */
-      F('thyroid_sx', 'Thyroid symptoms', 'multiselect', { required: false,
+      F('thyroid_sx', 'Thyroid symptoms', 'multiselect', { required: false, allowCustom: true,
         when: picked('conditions', 'Hypothyroidism'),
         options: ['Fatigue', 'Cold intolerance', 'Constipation', 'Weight gain', 'Hair loss', NONE],
         example: NONE,
@@ -227,7 +312,7 @@
         why: 'These separate stable disease from a presentation that needs action in this visit.' }),
 
       /* --- bone --- */
-      F('osteo_status', 'Bone health', 'multiselect', { required: false,
+      F('osteo_status', 'Bone health', 'multiselect', { required: false, allowCustom: true,
         when: picked('conditions', 'Osteoporosis'),
         options: ['On bisphosphonate, taking it correctly', 'Calcium and vitamin D replete',
                   'New fracture since last visit', 'Fall in the last year', 'Dental check done'],
@@ -253,11 +338,11 @@
   });
 
   visit({
-    id: 'routine', label: 'Routine visit / labs / refill', ar: 'زيارة روتينية أو صرف دواء',
-    tags: ['routine', 'refill', 'labs', 'روتين', 'صرف', 'تحاليل'],
+    id: 'routine', label: 'Routine visit / labs / refill',
+    tags: ['routine', 'refill', 'labs'],
     reason: 'routine', purpose: 'request labs',
     subjective: [
-      F('complaints', 'Any complaints today?', 'select', { required: true,
+      F('complaints', 'Any complaints today?', 'select', { required: true, allowCustom: true,
         options: ['Doing well, No complaints', 'Has a complaint (describe below)'],
         example: 'Doing well, No complaints',
         why: 'The house phrase is "Doing well, No complaints" — keep it exact.' }),
@@ -281,8 +366,8 @@
   });
 
   visit({
-    id: 'palpitation', label: 'Palpitation', ar: 'خفقان',
-    tags: ['palpitation', 'خفقان', 'cardiac', 'قلب'],
+    id: 'palpitation', label: 'Palpitation',
+    tags: ['palpitation', 'cardiac'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration of symptoms', 'select', { required: true, allowCustom: true,
@@ -294,7 +379,7 @@
         redFlags: ['On exertion'],
         example: 'On sudden movement, on lifting heavy objects',
         why: 'Exertional palpitation carries a far higher risk of a structural or arrhythmic cause.' }),
-      F('rhythm_character', 'Character — ask the patient to tap it out', 'select', { required: true,
+      F('rhythm_character', 'Character — ask the patient to tap it out', 'select', { required: true, allowCustom: true,
         options: ['Regular, fast', 'Irregular', 'Isolated skipped beats', 'Unable to characterise'],
         example: 'Isolated skipped beats',
         why: 'Tapping the rhythm is more informative than any description — it distinguishes ectopics from AF at the bedside.' }),
@@ -323,8 +408,8 @@
   });
 
   visit({
-    id: 'chest-pain', label: 'Chest pain', ar: 'ألم صدر',
-    tags: ['chest pain', 'ألم صدر', 'angina', 'قلب'],
+    id: 'chest-pain', label: 'Chest pain',
+    tags: ['chest pain', 'angina'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration and pattern', 'select', { required: true, allowCustom: true,
@@ -336,7 +421,7 @@
         redFlags: ['Central pressure or heaviness'],
         example: 'Reproducible on palpation, sharp',
         why: 'Reproducible tenderness lowers the probability of ACS but never excludes it on its own.' }),
-      F('relation', 'Relation to exertion', 'select', { required: true,
+      F('relation', 'Relation to exertion', 'select', { required: true, allowCustom: true,
         options: ['Occurs on exertion, relieved by rest', 'Occurs at rest only', 'Unrelated to activity', 'Occurs at rest AND on exertion'],
         redFlags: ['Occurs on exertion, relieved by rest', 'Occurs at rest AND on exertion'],
         example: 'Unrelated to activity',
@@ -367,8 +452,8 @@
   });
 
   visit({
-    id: 'headache', label: 'Headache', ar: 'صداع',
-    tags: ['headache', 'صداع', 'migraine', 'شقيقة'],
+    id: 'headache', label: 'Headache',
+    tags: ['headache', 'migraine'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('pattern', 'Onset and pattern', 'select', { required: true, allowCustom: true,
@@ -381,7 +466,7 @@
                   'Nausea or vomiting', 'Photophobia and phonophobia', 'Aura'],
         example: 'Unilateral, pulsating, nausea, photophobia',
         why: 'Migraine is a positive diagnosis from these criteria, not a diagnosis of exclusion.' }),
-      F('analgesic_days', 'Analgesic use — days per month', 'select', { required: true,
+      F('analgesic_days', 'Analgesic use — days per month', 'select', { required: true, allowCustom: true,
         options: ['< 5 days', '5-9 days', '10-14 days', '15 days or more'],
         redFlags: ['10-14 days', '15 days or more'],
         example: '< 5 days',
@@ -407,14 +492,14 @@
   });
 
   visit({
-    id: 'back-pain', label: 'Low back pain', ar: 'ألم أسفل الظهر',
-    tags: ['back pain', 'ظهر', 'sciatica', 'عرق النسا'],
+    id: 'back-pain', label: 'Low back pain',
+    tags: ['back pain', 'sciatica'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration', 'select', { required: true, allowCustom: true,
         options: ['< 6 weeks (acute)', '6-12 weeks (subacute)', '> 12 weeks (chronic)'], example: '< 6 weeks (acute)',
         why: 'Under six weeks with no red flags means no imaging — early imaging worsens outcomes.' }),
-      F('radiation', 'Radiation', 'select', { required: true,
+      F('radiation', 'Radiation', 'select', { required: true, allowCustom: true,
         options: ['No radiation', 'Radiates to buttock only', 'Radiates below the knee in a dermatomal pattern'],
         example: 'No radiation',
         why: 'Below the knee in a dermatomal pattern is radicular; above it usually is not.' }),
@@ -439,16 +524,16 @@
   });
 
   visit({
-    id: 'dizziness', label: 'Dizziness / vertigo', ar: 'دوخة ودوار',
-    tags: ['dizziness', 'دوخة', 'vertigo', 'دوار'],
+    id: 'dizziness', label: 'Dizziness / vertigo',
+    tags: ['dizziness', 'vertigo'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
-      F('type', 'What does the patient actually mean?', 'select', { required: true,
+      F('type', 'What does the patient actually mean?', 'select', { required: true, allowCustom: true,
         options: ['Spinning sensation (vertigo)', 'Light-headed / about to faint (presyncope)',
                   'Unsteady on feet (disequilibrium)', 'Vague or hard to characterise'],
         example: 'Spinning sensation (vertigo)',
         why: 'This single question splits the differential into four separate diseases. Ask it before anything else.' }),
-      F('duration_episode', 'Duration of each episode', 'select', { required: true,
+      F('duration_episode', 'Duration of each episode', 'select', { required: true, allowCustom: true,
         options: ['Seconds', 'Minutes to an hour', 'Hours', 'Days, continuous'],
         example: 'Seconds',
         why: 'Seconds with head movement is BPPV; hours with hearing loss is Meniere; days continuous is vestibular neuritis or a stroke.' }),
@@ -479,8 +564,8 @@
   });
 
   visit({
-    id: 'fatigue', label: 'Fatigue / tiredness', ar: 'تعب وإرهاق',
-    tags: ['fatigue', 'tired', 'تعب', 'إرهاق'],
+    id: 'fatigue', label: 'Fatigue / tiredness',
+    tags: ['fatigue', 'tired'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration', 'select', { required: true, allowCustom: true,
@@ -508,8 +593,8 @@
   });
 
   visit({
-    id: 'sore-throat', label: 'Sore throat / URTI', ar: 'التهاب حلق ونزلة برد',
-    tags: ['sore throat', 'حلق', 'urti', 'برد', 'tonsillitis'],
+    id: 'sore-throat', label: 'Sore throat / URTI',
+    tags: ['sore throat', 'urti', 'tonsillitis'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration', 'select', { required: true, allowCustom: true,
@@ -517,7 +602,7 @@
         redFlags: ['> 10 days with no improvement'],
         example: '3 days',
         why: 'Beyond ten days without improvement, a bacterial sinusitis pathway opens.' }),
-      F('centor', 'Centor / McIsaac criteria present', 'multiselect', { required: true,
+      F('centor', 'Centor / McIsaac criteria present', 'multiselect', { required: true, allowCustom: true,
         options: ['Fever > 38', 'Absence of cough', 'Tender anterior cervical nodes', 'Tonsillar exudate or swelling', NONE],
         example: 'Absence of cough, tonsillar exudate',
         why: 'The score decides whether a swab or an antibiotic is justified at all — most sore throats need neither.' }),
@@ -541,8 +626,8 @@
   });
 
   visit({
-    id: 'dysuria', label: 'Urinary symptoms', ar: 'أعراض بولية',
-    tags: ['dysuria', 'uti', 'بول', 'حرقان', 'urinary'],
+    id: 'dysuria', label: 'Urinary symptoms',
+    tags: ['dysuria', 'uti', 'urinary'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('symptoms', 'Urinary symptoms present', 'multiselect', { required: true, allowCustom: true,
@@ -555,7 +640,7 @@
         ['Fever or rigors', 'Flank pain', 'Vomiting', 'Confusion, new', 'Pregnancy', 'Male patient', 'Recurrent episodes'],
         ['Fever or rigors', 'Flank pain', 'Vomiting', 'Confusion, new', 'Pregnancy'],
         'Fever and flank pain make this pyelonephritis, not cystitis — different antibiotic, different duration.'),
-      F('prior_abx', 'Antibiotic in the last 3 months', 'select', { required: true,
+      F('prior_abx', 'Antibiotic in the last 3 months', 'select', { required: true, allowCustom: true,
         options: ['No', 'Yes'], example: 'No',
         why: 'Recent antibiotic exposure predicts resistance and changes the empirical choice.' }),
     ],
@@ -575,8 +660,8 @@
   });
 
   visit({
-    id: 'abdo-pain', label: 'Abdominal pain', ar: 'ألم بطن',
-    tags: ['abdominal', 'بطن', 'ألم بطن', 'stomach'],
+    id: 'abdo-pain', label: 'Abdominal pain',
+    tags: ['abdominal', 'stomach'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('site', 'Site', 'select', { required: true, allowCustom: true,
@@ -609,11 +694,11 @@
   });
 
   visit({
-    id: 'joint-pain', label: 'Joint pain', ar: 'ألم مفاصل',
-    tags: ['joint', 'مفاصل', 'arthritis', 'knee', 'ركبة'],
+    id: 'joint-pain', label: 'Joint pain',
+    tags: ['joint', 'arthritis', 'knee'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
-      F('pattern', 'Pattern', 'select', { required: true,
+      F('pattern', 'Pattern', 'select', { required: true, allowCustom: true,
         options: ['Single joint', 'Few joints (2-4), asymmetrical', 'Many joints, symmetrical'],
         example: 'Single joint',
         why: 'Monoarthritis is septic or crystal until proven otherwise; symmetrical polyarthritis is inflammatory.' }),
@@ -642,8 +727,8 @@
   });
 
   visit({
-    id: 'dyspnea', label: 'Shortness of breath / cough', ar: 'ضيق نفس وسعال',
-    tags: ['dyspnea', 'sob', 'ضيق نفس', 'cough', 'سعال', 'asthma', 'copd'],
+    id: 'dyspnea', label: 'Shortness of breath / cough',
+    tags: ['dyspnea', 'sob', 'cough', 'asthma', 'copd'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('duration', 'Duration', 'select', { required: true, allowCustom: true,
@@ -677,70 +762,16 @@
   });
 
   visit({
-    id: 'geriatric', label: 'Comprehensive elderly visit', ar: 'زيارة شاملة لكبير السن', geri: true,
-    tags: ['elderly', 'geriatric', 'كبار السن', 'cga', 'شامل'],
-    reason: 'routine', purpose: 'for lab results',
-    subjective: [
-      F('frailty', 'Clinical Frailty Scale', 'select', { required: true,
-        options: ['1 - Very fit', '2 - Fit', '3 - Managing well', '4 - Living with very mild frailty',
-                  '5 - Mild frailty', '6 - Moderate frailty', '7 - Severe frailty', '8 - Very severe frailty', '9 - Terminally ill'],
-        redFlags: ['7 - Severe frailty', '8 - Very severe frailty', '9 - Terminally ill'],
-        example: '5 - Mild frailty',
-        why: 'The frailty score sets the BP and HbA1c targets, decides which drugs still earn their place, and opens the goals-of-care conversation.' }),
-      F('polypharmacy', 'Number of regular medications', 'select', { required: true,
-        options: ['1-4', '5-9', '10 or more'],
-        redFlags: ['5-9', '10 or more'],
-        example: '5-9',
-        why: 'Five or more warrants a dedicated medication review — not one squeezed into a busy visit.' }),
-      F('med_review_done', 'Medication review', 'select', { required: true,
-        when: oneOf('polypharmacy', ['5-9', '10 or more']),
-        options: ['Full review done today', 'Booked a dedicated review appointment', 'Not yet reviewed'],
-        redFlags: ['Not yet reviewed'],
-        example: 'Booked a dedicated review appointment',
-        why: 'Five or more medications needs its own appointment. Squeezing it into a busy visit is how it never happens.' }),
-      F('geriatric_screen', 'Screening domains covered today', 'multiselect', { required: true, allowCustom: true,
-        options: ['Falls in the last year asked', 'Cognition screened', 'Mood screened', 'Continence asked',
-                  'Nutrition / weight trend reviewed', 'Vision and hearing asked', 'Function (ADL/IADL) asked',
-                  'Social support asked', 'Advance care planning discussed'],
-        example: 'Falls asked, cognition screened, nutrition reviewed, function asked',
-        why: 'Screen briefly across all domains, then book a longer visit for whatever comes back positive.' }),
-      F('functional_change', 'Any recent functional decline?', 'select', { required: true,
-        options: ['No change', 'Gradual decline over months', 'Sudden decline over days to weeks'],
-        redFlags: ['Sudden decline over days to weeks'],
-        example: 'No change',
-        why: 'Sudden functional decline is an acute illness — delirium, infection or a drug effect — never "old age".' }),
-      redFlagField(
-        ['New confusion', 'Recent fall with injury', 'Unintentional weight loss', 'New incontinence',
-         'Pressure area or skin breakdown', 'Carer reports they cannot cope'],
-        ['New confusion', 'Recent fall with injury', 'Unintentional weight loss', 'New incontinence',
-         'Pressure area or skin breakdown', 'Carer reports they cannot cope'],
-        'Each of these predicts admission or institutionalisation within months if not acted on now.'),
-    ],
-    exam: [
-      F('geri_exam', 'Examination', 'multiselect', { required: true, allowCustom: true,
-        options: ['Postural BP recorded', 'Timed Up and Go performed', 'Gait steady', 'Gait unsteady',
-                  'Skin intact over pressure areas', 'No peripheral oedema', 'Cognition: Mini-Cog performed'],
-        example: 'Postural BP recorded, Timed Up and Go 11 seconds, gait steady, skin intact',
-        why: 'Postural BP and a timed walk take ninety seconds and change management more often than any blood test.' }),
-      F('postural_bp', 'Postural BP (lying → standing)', 'text', { required: true,
-        example: '142/80 lying, 128/76 standing',
-        why: 'Measure standing BP at every visit over 65 — it decides whether to intensify or deprescribe.' }),
-    ],
-    er: 'in case of a fall with injury, new confusion, chest pain, or inability to pass urine',
-    fu: '3/12', fuFor: 'medication review and results',
-  });
-
-  visit({
-    id: 'falls', label: 'Falls assessment', ar: 'تقييم السقوط', geri: true,
-    tags: ['falls', 'سقوط', 'balance', 'توازن'],
+    id: 'falls', label: 'Falls assessment',
+    tags: ['falls', 'balance'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
-      F('fall_count', 'Number of falls in the last 12 months', 'select', { required: true,
+      F('fall_count', 'Number of falls in the last 12 months', 'select', { required: true, allowCustom: true,
         options: ['1', '2', '3 or more'],
         redFlags: ['2', '3 or more'],
         example: '2',
         why: 'Two or more falls, or any fall with injury, mandates a full multifactorial assessment.' }),
-      F('loc', 'Was there any loss of consciousness?', 'select', { required: true,
+      F('loc', 'Was there any loss of consciousness?', 'select', { required: true, allowCustom: true,
         options: ['No', 'Yes', 'Uncertain'],
         redFlags: ['Yes', 'Uncertain'],
         example: 'No',
@@ -785,16 +816,16 @@
   });
 
   visit({
-    id: 'memory', label: 'Memory concern', ar: 'شكوى ضعف ذاكرة', geri: true,
-    tags: ['memory', 'ذاكرة', 'dementia', 'خرف', 'cognition'],
+    id: 'memory', label: 'Memory concern',
+    tags: ['memory', 'dementia', 'cognition'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
-      F('informant', 'Is the history corroborated by an informant?', 'select', { required: true,
+      F('informant', 'Is the history corroborated by an informant?', 'select', { required: true, allowCustom: true,
         options: ['Yes, family member present', 'Yes, by phone', 'No informant available'],
         redFlags: ['No informant available'],
         example: 'Yes, family member present',
         why: 'The informant history is more accurate than the patient history and more accurate than any bedside test.' }),
-      F('onset', 'Onset and course', 'select', { required: true,
+      F('onset', 'Onset and course', 'select', { required: true, allowCustom: true,
         options: ['Gradual over years', 'Stepwise deterioration', 'Sudden over days to weeks', 'Fluctuating day to day'],
         redFlags: ['Sudden over days to weeks', 'Fluctuating day to day'],
         example: 'Gradual over years',
@@ -829,8 +860,8 @@
   });
 
   visit({
-    id: 'other', label: 'Other complaint (generic)', ar: 'شكوى أخرى',
-    tags: ['generic', 'other', 'أخرى'],
+    id: 'other', label: 'Other complaint (generic)',
+    tags: ['generic', 'other'],
     reason: 'follow up', purpose: 'new complaint',
     subjective: [
       F('hpi_detail', 'History of presenting complaint', 'textarea', { required: true,
@@ -856,13 +887,13 @@
   /* assemble the full section list for a visit */
   function sectionsFor(v) {
     return [
-      { id: 'header', title: 'Patient & problem list', ar: 'المريض وقائمة المشاكل', fields: HEADER },
-      { id: 'subjective', title: 'Subjective (History)', ar: 'التاريخ المرضي',
+      { id: 'header', title: 'Patient & problem list', fields: HEADER },
+      { id: 'subjective', title: 'Subjective (History)',
         fields: (v.subjective || []).concat(SUBJ_TAIL) },
-      { id: 'objective', title: 'Objective', ar: 'الفحص',
+      { id: 'objective', title: 'Objective',
         fields: VITALS.concat([GENERAL_EXAM]).concat(v.exam || []).concat([LABS]) },
-      { id: 'assessment', title: 'Assessment — your reasoning', ar: 'التقييم', fields: ASSESSMENT },
-      { id: 'plan', title: 'Plan', ar: 'الخطة', fields: PLAN },
+      { id: 'assessment', title: 'Assessment', fields: ASSESSMENT },
+      { id: 'plan', title: 'Plan', fields: PLAN },
     ];
   }
 

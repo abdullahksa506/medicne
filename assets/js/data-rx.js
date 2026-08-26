@@ -1,270 +1,289 @@
-/* وصفات جاهزة + نصائح للمريض — كل نص قابل للنسخ بضغطة واحدة */
+/* Ready prescriptions and patient handouts — every text copies in one tap */
 
 window.RX = [
-  /* ===== تنفسي علوي ===== */
-  { id: 'rx-urti', cat: 'تنفسي', title: 'نزلة برد فيروسية', sub: 'علاج عرضي بدون مضاد حيوي',
-    tags: ['برد', 'زكام', 'رشح', 'كحة'],
-    text: `1) Paracetamol 500 mg — قرص أو قرصان كل 6 ساعات عند الحاجة للحرارة أو الألم (بحد أقصى 4 جم يومياً)
-2) Normal saline nasal spray — بختان في كل فتحة أنف 3 – 4 مرات يومياً
-3) Xylometazoline 0.1% nasal spray — بخة في كل فتحة مرتين يومياً، لا تتجاوز 5 أيام
-4) غرغرة ماء دافئ مع ملح 3 مرات يومياً
-5) سوائل دافئة وراحة`,
-    notes: ['المدة الطبيعية 7 – 10 أيام، والسعال قد يستمر أسبوعين إلى ثلاثة.', 'راجع إذا: حرارة فوق 39 لأكثر من 3 أيام، ضيق نفس، أو تدهور بعد تحسّن.'] },
+  /* ===== RESPIRATORY ===== */
+  { id: 'rx-urti', cat: 'Respiratory', title: 'Viral Upper Respiratory Infection', sub: 'Symptomatic, no antibiotic',
+    tags: ['cold', 'urti', 'cough', 'coryza'],
+    text: `1) Paracetamol 500 mg — one or two tablets every 6 hours as needed for fever or pain (maximum 4 g daily)
+2) Normal saline nasal spray — two sprays in each nostril 3 – 4 times daily
+3) Xylometazoline 0.1% nasal spray — one spray in each nostril twice daily, no longer than 5 days
+4) Warm salt water gargle three times daily
+5) Warm fluids and rest`,
+    notes: ['The natural course is 7 – 10 days, and cough may persist for two to three weeks.',
+      'Return if: fever above 39 °C for more than 3 days, shortness of breath, or deterioration after initial improvement.'] },
 
-  { id: 'rx-strep', cat: 'تنفسي', title: 'التهاب حلق بكتيري', sub: 'سترب مؤكد أو Centor مرتفع',
-    tags: ['حلق', 'لوز', 'سترب', 'بنسلين'],
-    text: `1) Amoxicillin 500 mg — كبسولة مرتين يومياً لمدة 10 أيام (أكمل المدة كاملة)
-2) Paracetamol 500 mg — قرص أو قرصان كل 6 ساعات عند الحاجة
-3) Ibuprofen 400 mg — قرص كل 8 ساعات بعد الأكل عند شدة الألم
-4) بخاخ أو أقراص استحلاب مخدّرة للحلق عند الحاجة
-5) غرغرة ماء دافئ مع ملح`,
-    notes: ['حساسية البنسلين: Azithromycin 500 مج اليوم الأول ثم 250 مج لأربعة أيام.', 'إكمال 10 أيام ضروري لمنع الحمى الروماتيزمية.'] },
+  { id: 'rx-strep', cat: 'Respiratory', title: 'Bacterial Pharyngitis', sub: 'Confirmed strep or a high Centor score',
+    tags: ['throat', 'tonsillitis', 'strep', 'penicillin'],
+    text: `1) Amoxicillin 500 mg — one capsule twice daily for 10 days (complete the full course)
+2) Paracetamol 500 mg — one or two tablets every 6 hours as needed
+3) Ibuprofen 400 mg — one tablet every 8 hours after food for severe pain
+4) Anaesthetic throat spray or lozenges as needed
+5) Warm salt water gargle`,
+    notes: ['Penicillin allergy: azithromycin 500 mg on day 1 then 250 mg for four days.',
+      'Completing the full 10 days is what prevents rheumatic fever.'] },
 
-  { id: 'rx-sinus', cat: 'تنفسي', title: 'التهاب الجيوب البكتيري', sub: 'بعد ≥ 10 أيام أو تدهور مزدوج',
-    tags: ['جيوب', 'sinusitis', 'أنف'],
-    text: `1) Amoxicillin/Clavulanate 875/125 mg — قرص مرتين يومياً بعد الأكل لمدة 7 أيام
-2) Mometasone nasal spray — بختان في كل فتحة أنف مرة يومياً لمدة أسبوعين
-3) Normal saline nasal irrigation — غسول أنفي مرتين يومياً
-4) Paracetamol 500 mg — عند الحاجة للألم`,
-    notes: ['حساسية البنسلين: Doxycycline 100 مج مرتين يومياً لمدة 7 أيام.', 'تحويل عاجل عند: تورم حول العين، ازدواج رؤية، أو صداع شديد مع أعراض عصبية.'] },
+  { id: 'rx-sinus', cat: 'Respiratory', title: 'Bacterial Sinusitis', sub: 'After 10 days, or double worsening',
+    tags: ['sinusitis', 'sinus', 'nasal'],
+    text: `1) Amoxicillin/Clavulanate 875/125 mg — one tablet twice daily after food for 7 days
+2) Mometasone nasal spray — two sprays in each nostril once daily for two weeks
+3) Normal saline nasal irrigation twice daily
+4) Paracetamol 500 mg as needed for pain`,
+    notes: ['Penicillin allergy: doxycycline 100 mg twice daily for 7 days.',
+      'Urgent referral for periorbital swelling, diplopia, or severe headache with neurological signs.'] },
 
-  { id: 'rx-asthma-exac', cat: 'تنفسي', title: 'نوبة ربو خفيفة – متوسطة', sub: 'خروج من العيادة',
-    tags: ['ربو', 'بخاخ', 'كورتيزون'],
-    text: `1) Salbutamol inhaler 100 mcg — 4 بخات عبر السبيسر كل 4 – 6 ساعات لمدة 48 ساعة ثم عند الحاجة
-2) Prednisolone 40 mg — قرص واحد صباحاً بعد الأكل لمدة 5 أيام (بدون تدرج)
-3) استمر على البخاخ الوقائي (الكورتيزون الاستنشاقي) بانتظام ولا توقفه
-4) مراجعة العيادة خلال 3 – 7 أيام لإعادة التقييم`,
-    notes: ['استخدم السبيسر دائماً — يوصل الدواء أفضل من البخ المباشر.', 'راجع الطوارئ فوراً إذا: صعوبة في إكمال الجملة، ازرقاق الشفاه، أو عدم استجابة للبخاخ.'] },
+  { id: 'rx-asthma-exac', cat: 'Respiratory', title: 'Mild to Moderate Asthma Exacerbation', sub: 'Discharge from clinic',
+    tags: ['asthma', 'inhaler', 'steroid', 'wheeze'],
+    text: `1) Salbutamol inhaler 100 mcg — 4 puffs through a spacer every 4 – 6 hours for 48 hours, then as needed
+2) Prednisolone 40 mg — one tablet each morning after food for 5 days (no taper)
+3) Continue the preventer (inhaled corticosteroid) regularly — do not stop it
+4) Clinic review within 3 – 7 days for reassessment`,
+    notes: ['Always use a spacer — it delivers the drug better than direct actuation.',
+      'Attend the emergency department immediately for: inability to complete a sentence, blue lips, or no response to the reliever.'] },
 
-  /* ===== المسالك ===== */
-  { id: 'rx-cystitis', cat: 'مسالك', title: 'التهاب مثانة بسيط', sub: 'امرأة غير حامل',
-    tags: ['بول', 'uti', 'حرقان', 'مثانة'],
-    text: `1) Nitrofurantoin 100 mg — كبسولة مرتين يومياً مع الأكل لمدة 5 أيام
-2) Paracetamol 500 mg — عند الحاجة للألم
-3) Phenazopyridine 200 mg — قرص 3 مرات يومياً لمدة يومين فقط عند شدة الحرقان (ينبّه: يلوّن البول برتقالياً)
-4) شرب 2 – 3 لتر ماء يومياً`,
-    notes: ['لا تستخدم النيتروفيورانتوين إذا كان eGFR أقل من 30.', 'بديل: Fosfomycin 3 جم جرعة واحدة.', 'راجع إذا: حرارة، ألم خاصرة، قيء، أو استمرار الأعراض بعد 3 أيام.'] },
+  /* ===== URINARY ===== */
+  { id: 'rx-cystitis', cat: 'Urinary', title: 'Uncomplicated Cystitis', sub: 'Non-pregnant woman',
+    tags: ['uti', 'dysuria', 'bladder', 'urine'],
+    text: `1) Nitrofurantoin 100 mg — one capsule twice daily with food for 5 days
+2) Paracetamol 500 mg as needed for pain
+3) Phenazopyridine 200 mg — one tablet three times daily for two days only, for severe dysuria (warn: turns urine orange)
+4) Drink 2 – 3 litres of water daily`,
+    notes: ['Do not use nitrofurantoin if eGFR is below 30.',
+      'Alternative: fosfomycin 3 g as a single dose.',
+      'Return if fever, flank pain, vomiting, or symptoms persisting beyond 3 days.'] },
 
-  { id: 'rx-uti-preg', cat: 'مسالك', title: 'التهاب بولي في الحمل', sub: 'خيارات آمنة',
-    tags: ['حمل', 'بول', 'uti'],
-    text: `1) Cephalexin 500 mg — كبسولة 3 – 4 مرات يومياً لمدة 7 أيام
-2) Paracetamol 500 mg — عند الحاجة
-3) إكثار من السوائل
-4) زراعة بول للمتابعة بعد أسبوع من انتهاء العلاج`,
-    notes: ['ممنوع في الحمل: الكينولونات والتتراسيكلين، والتراي ميثوبريم في الثلث الأول.', 'حتى الجرثومية بدون أعراض تُعالج في الحمل.'] },
+  { id: 'rx-uti-preg', cat: 'Urinary', title: 'UTI in Pregnancy', sub: 'Safe options',
+    tags: ['pregnancy', 'uti', 'urine', 'antenatal'],
+    text: `1) Cephalexin 500 mg — one capsule three to four times daily for 7 days
+2) Paracetamol 500 mg as needed
+3) Increase fluid intake
+4) Repeat urine culture one week after completing treatment`,
+    notes: ['Contraindicated in pregnancy: quinolones, tetracyclines, and trimethoprim in the first trimester.',
+      'Asymptomatic bacteriuria is treated in pregnancy, unlike in non-pregnant adults.'] },
 
-  /* ===== هضمي ===== */
-  { id: 'rx-gastro-adult', cat: 'هضمي', title: 'نزلة معوية — بالغ', sub: 'علاج داعم',
-    tags: ['اسهال', 'قيء', 'معدة', 'جفاف'],
-    text: `1) Oral rehydration salts — كيس مذاب في لتر ماء، يُشرب بالتدريج طوال اليوم
-2) Ondansetron 4 mg — قرص عند الحاجة للقيء (بحد أقصى 3 مرات يومياً)
-3) Loperamide 2 mg — بعد كل إسهال، بحد أقصى 8 مج يومياً (ممنوع مع الحرارة أو الدم في البراز)
-4) Paracetamol 500 mg — عند الحاجة
-5) أكل خفيف: أرز، خبز محمص، موز، زبادي`,
-    notes: ['لا مضاد حيوي في أغلب الحالات — معظمها فيروسية.', 'راجع إذا: دم في البراز، حرارة عالية، جفاف واضح، أو استمرار أكثر من 5 أيام.'] },
+  /* ===== GASTROINTESTINAL ===== */
+  { id: 'rx-gastro-adult', cat: 'Gastrointestinal', title: 'Adult Gastroenteritis', sub: 'Supportive care',
+    tags: ['diarrhoea', 'vomiting', 'stomach', 'dehydration'],
+    text: `1) Oral rehydration salts — one sachet dissolved in one litre of water, sipped through the day
+2) Ondansetron 4 mg — one tablet as needed for vomiting (maximum three times daily)
+3) Loperamide 2 mg — after each loose stool, maximum 8 mg daily (avoid with fever or bloody stool)
+4) Paracetamol 500 mg as needed
+5) Light diet: rice, toast, banana, yoghurt`,
+    notes: ['No antibiotic in most cases — the majority are viral.',
+      'Return if: blood in stool, high fever, clear dehydration, or symptoms beyond 5 days.'] },
 
-  { id: 'rx-gerd', cat: 'هضمي', title: 'ارتجاع المريء', sub: 'كورس 8 أسابيع',
-    tags: ['ارتجاع', 'حرقة', 'معدة', 'gerd'],
-    text: `1) Omeprazole 20 mg — كبسولة قبل الإفطار بـ 30 دقيقة يومياً لمدة 8 أسابيع
-2) Alginate / antacid suspension — ملعقة بعد الوجبات وعند النوم عند الحاجة
-3) نصائح: تجنّب الأكل قبل النوم بـ 3 ساعات · ارفع رأس السرير 15 سم · قلل الدهون والكافيين والنعناع والحمضيات · أنقص الوزن · أوقف التدخين`,
-    notes: ['بعد التحسن قلّل تدريجياً لأقل جرعة فعّالة.', 'تحويل للمنظار عند: صعوبة بلع، نقص وزن، فقر دم، قيء متكرر، أو فشل العلاج.'] },
+  { id: 'rx-gerd', cat: 'Gastrointestinal', title: 'Gastro-oesophageal Reflux', sub: 'An 8-week course',
+    tags: ['reflux', 'heartburn', 'gerd', 'stomach'],
+    text: `1) Omeprazole 20 mg — one capsule 30 minutes before breakfast daily for 8 weeks
+2) Alginate or antacid suspension — one spoonful after meals and at bedtime as needed
+3) Lifestyle: no food within 3 hours of lying down · raise the head of the bed 15 cm · reduce fat, caffeine, mint and citrus · lose weight · stop smoking`,
+    notes: ['After improvement, step down to the lowest effective dose or on-demand use.',
+      'Refer for endoscopy with: dysphagia, weight loss, anaemia, recurrent vomiting, or failure after 8 weeks.'] },
 
-  { id: 'rx-constipation', cat: 'هضمي', title: 'الإمساك المزمن', sub: 'بالغين',
-    tags: ['امساك', 'ملين', 'قولون'],
-    text: `1) Macrogol (PEG 3350) — كيس مذاب في كوب ماء مرة يومياً (يمكن زيادتها لكيسين)
-2) Psyllium husk — ملعقة كبيرة في كوب ماء مرة يومياً مع الإكثار من السوائل
-3) Lactulose 15 ml — عند الحاجة ليلاً
-4) نصائح: 25 – 30 جم ألياف يومياً · 2 لتر ماء · مشي 30 دقيقة · لا تؤجل الحاجة للتبرز`,
-    notes: ['ابحث عن الأسباب: خمول درقية، سكري، أدوية (حديد، مسكنات أفيونية، مضادات اكتئاب، كالسيوم).', 'تحويل عند: نزيف، نقص وزن، تغير مستمر في عادة التبرز فوق سن 50، أو تاريخ عائلي لسرطان القولون.'] },
+  { id: 'rx-constipation', cat: 'Gastrointestinal', title: 'Chronic Constipation', sub: 'Adults',
+    tags: ['constipation', 'laxative', 'bowel'],
+    text: `1) Macrogol (PEG 3350) — one sachet dissolved in a glass of water once daily (may increase to two)
+2) Psyllium husk — one tablespoon in a glass of water once daily with plenty of fluids
+3) Lactulose 15 ml at night as needed
+4) Lifestyle: 25 – 30 g fibre daily · 2 litres of water · 30 minutes of walking · do not defer the urge`,
+    notes: ['Look for causes: hypothyroidism, diabetes, and drugs (iron, opioids, antidepressants, calcium).',
+      'Refer for: bleeding, weight loss, a persistent change in bowel habit over age 50, or a family history of colorectal cancer.'] },
 
-  /* ===== ألم والتهاب ===== */
-  { id: 'rx-lbp', cat: 'ألم', title: 'ألم أسفل الظهر الميكانيكي', sub: 'بدون علامات حمراء',
-    tags: ['ظهر', 'ألم', 'عضلات'],
-    text: `1) Ibuprofen 400 mg — قرص 3 مرات يومياً بعد الأكل لمدة 5 – 7 أيام
-2) Paracetamol 1 g — كل 8 ساعات عند الحاجة
-3) Cyclobenzaprine 5 mg أو Tizanidine 2 mg — ليلاً لمدة 3 – 5 أيام عند التشنج العضلي
-4) كمادات دافئة 15 – 20 دقيقة مرتين يومياً
-5) استمر بالحركة والنشاط اليومي — تجنّب الراحة التامة في السرير
-6) تمارين تقوية أسفل الظهر بعد هدوء الألم الحاد`,
-    notes: ['راجع فوراً عند: ضعف بالساقين، تنميل منطقة السرج، أو سلس بولي/برازي.', 'تجنّب مضادات الالتهاب مع القرحة أو القصور الكلوي أو مميعات الدم.'] },
+  /* ===== PAIN ===== */
+  { id: 'rx-lbp', cat: 'Pain', title: 'Mechanical Low Back Pain', sub: 'No red flags',
+    tags: ['back', 'pain', 'muscle', 'lumbar'],
+    text: `1) Ibuprofen 400 mg — one tablet three times daily after food for 5 – 7 days
+2) Paracetamol 1 g — every 8 hours as needed
+3) Cyclobenzaprine 5 mg or Tizanidine 2 mg — at night for 3 – 5 days if there is muscle spasm
+4) Warm compresses for 15 – 20 minutes twice daily
+5) Stay active and continue daily activity — avoid complete bed rest
+6) Core strengthening exercises once the acute pain settles`,
+    notes: ['Return immediately for: leg weakness, saddle numbness, or urinary or faecal incontinence.',
+      'Avoid NSAIDs with peptic ulcer disease, renal impairment, or anticoagulation.'] },
 
-  { id: 'rx-migraine', cat: 'ألم', title: 'نوبة صداع نصفي', sub: 'علاج حاد',
-    tags: ['صداع', 'شقيقة', 'migraine'],
-    text: `1) Naproxen 500 mg — قرص عند بداية النوبة، ويمكن تكراره بعد 12 ساعة
-2) Sumatriptan 50 mg — قرص عند عدم استجابة المسكن، ويمكن تكراره بعد ساعتين (بحد أقصى 200 مج يومياً)
-3) Metoclopramide 10 mg — قرص للغثيان
-4) الراحة في غرفة مظلمة هادئة
-5) سجّل يوميات صداع: التوقيت، المدة، المحفزات، وعدد أيام استخدام المسكن شهرياً`,
-    notes: ['التريبتان ممنوع مع مرض قلبي إقفاري أو ضغط غير مضبوط.', 'استخدام المسكن أكثر من 10 أيام شهرياً يسبب صداع الإفراط الدوائي.'] },
+  { id: 'rx-migraine', cat: 'Pain', title: 'Acute Migraine', sub: 'Attack treatment',
+    tags: ['headache', 'migraine'],
+    text: `1) Naproxen 500 mg — one tablet at the onset of the attack, repeatable after 12 hours
+2) Sumatriptan 50 mg — one tablet if the analgesic is insufficient, repeatable after 2 hours (maximum 200 mg daily)
+3) Metoclopramide 10 mg — one tablet for nausea
+4) Rest in a dark, quiet room
+5) Keep a headache diary: timing, duration, triggers, and analgesic days per month`,
+    notes: ['Triptans are contraindicated with ischaemic heart disease or uncontrolled hypertension.',
+      'Analgesic use on more than 10 days a month causes medication-overuse headache.'] },
 
-  { id: 'rx-gout-acute', cat: 'ألم', title: 'نوبة نقرس حادة', sub: 'ابدأ خلال 24 ساعة',
-    tags: ['نقرس', 'مفصل', 'gout'],
-    text: `1) Naproxen 500 mg — قرص مرتين يومياً بعد الأكل لمدة 5 – 7 أيام
-2) أو Colchicine 0.6 mg — قرصان فوراً، ثم قرص بعد ساعة، ثم قرص مرة أو مرتين يومياً
-3) Omeprazole 20 mg — يومياً لحماية المعدة مع مضاد الالتهاب
-4) رفع الطرف وكمادات باردة وراحة المفصل
-5) إن كان المريض على الوبيورينول فلا يوقفه`,
-    notes: ['مع القصور الكلوي: استخدم Prednisolone 30 – 40 مج لمدة 5 أيام بدلاً من مضاد الالتهاب.', 'مفصل حار مع حرارة عامة = استبعد التهاباً إنتانياً بالبزل أولاً.'] },
+  { id: 'rx-gout-acute', cat: 'Pain', title: 'Acute Gout', sub: 'Start within 24 hours',
+    tags: ['gout', 'joint', 'urate'],
+    text: `1) Naproxen 500 mg — one tablet twice daily after food for 5 – 7 days
+2) Or Colchicine 0.6 mg — two tablets immediately, one after an hour, then one once or twice daily
+3) Omeprazole 20 mg daily for gastric protection alongside the NSAID
+4) Elevate the limb, apply cold compresses, and rest the joint
+5) If already on allopurinol, do not stop it`,
+    notes: ['With renal impairment use prednisolone 30 – 40 mg for 5 days instead of an NSAID.',
+      'A hot joint with systemic fever means excluding septic arthritis by aspiration first.'] },
 
-  /* ===== جلدية ===== */
-  { id: 'rx-eczema', cat: 'جلدية', title: 'الإكزيما (التهاب الجلد التأتبي)', sub: 'نوبة خفيفة – متوسطة',
-    tags: ['اكزيما', 'جلد', 'حكة', 'كورتيزون'],
-    text: `1) مرطّب سميك (فازلين أو سيراميد) — مرتين إلى ثلاث مرات يومياً وبعد الاستحمام مباشرة بدقائق
-2) Hydrocortisone 1% cream — للوجه وثنايا الجلد، مرة يومياً لمدة 5 – 7 أيام
-3) Betamethasone valerate 0.1% cream — للجسم والأطراف، مرة يومياً لمدة 7 – 10 أيام
-4) Cetirizine 10 mg — قرص ليلاً عند شدة الحكة
-5) استحمام قصير بماء فاتر مع غسول خالٍ من الصابون والعطور`,
-    notes: ['لا تستخدم الكورتيزون القوي على الوجه أو ثنايا الجلد لفترات طويلة.', 'قشور عسلية أو صديد = عدوى ثانوية تحتاج مضاداً حيوياً.'] },
+  /* ===== DERMATOLOGY ===== */
+  { id: 'rx-eczema', cat: 'Dermatology', title: 'Atopic Dermatitis', sub: 'Mild to moderate flare',
+    tags: ['eczema', 'skin', 'itch', 'steroid'],
+    text: `1) Thick emollient (petrolatum or a ceramide cream) — two to three times daily and within minutes of bathing
+2) Hydrocortisone 1% cream — for the face and skin folds, once daily for 5 – 7 days
+3) Betamethasone valerate 0.1% cream — for the body and limbs, once daily for 7 – 10 days
+4) Cetirizine 10 mg at night for severe itch
+5) Short lukewarm showers with a soap-free, fragrance-free wash`,
+    notes: ['Do not use potent steroids on the face or skin folds for prolonged periods.',
+      'Honey-coloured crusting or pus indicates secondary infection needing an antibiotic.'] },
 
-  { id: 'rx-tinea', cat: 'جلدية', title: 'الفطريات الجلدية', sub: 'قدم الرياضي / السعفة',
-    tags: ['فطريات', 'سعفة', 'جلد', 'حكة'],
-    text: `1) Clotrimazole 1% cream — يوضع على المنطقة وحولها بـ 2 سم، مرتين يومياً لمدة 2 – 4 أسابيع
-2) استمر أسبوعاً إضافياً بعد اختفاء الطفح
-3) نصائح: جفف المنطقة جيداً · ملابس قطنية فضفاضة · لا تشارك المناشف · بدّل الجوارب يومياً`,
-    notes: ['فطريات فروة الرأس أو الأظافر تحتاج علاجاً فموياً (تيربينافين أو جريزوفولفين) وليس موضعياً.', 'إذا اتسع الطفح رغم العلاج، أعد النظر في التشخيص (إكزيما، صدفية).'] },
+  { id: 'rx-tinea', cat: 'Dermatology', title: 'Superficial Fungal Infection', sub: "Athlete's foot / tinea corporis",
+    tags: ['fungal', 'tinea', 'skin', 'itch'],
+    text: `1) Clotrimazole 1% cream — apply to the area and 2 cm beyond it, twice daily for 2 – 4 weeks
+2) Continue for one further week after the rash clears
+3) Advice: dry the area thoroughly · loose cotton clothing · do not share towels · change socks daily`,
+    notes: ['Scalp and nail infections need oral treatment (terbinafine or griseofulvin), not topical.',
+      'If the rash spreads despite treatment, reconsider the diagnosis (eczema, psoriasis).'] },
 
-  /* ===== مزمن ===== */
-  { id: 'rx-dm-start', cat: 'مزمن', title: 'بدء علاج السكري النوع الثاني', sub: 'خط أول',
-    tags: ['سكري', 'ميتفورمين', 'diabetes'],
-    text: `1) Metformin 500 mg — قرص مع العشاء لمدة أسبوع، ثم قرص مع الإفطار وقرص مع العشاء
-   (تُرفع تدريجياً حتى 1000 مج مرتين يومياً حسب التحمل)
-2) قياس السكر الصائم مرتين أسبوعياً وتسجيله
-3) HbA1c بعد 3 شهور
-4) إحالة لأخصائي تغذية وتثقيف السكري
-5) فحص قاع العين + فحص القدم + ACR بالبول`,
-    notes: ['الأعراض الهضمية شائعة في البداية وتخف مع التدرج ومع أخذ الدواء بعد الأكل.', 'أوقف الميتفورمين مؤقتاً عند الجفاف أو المرض الحاد أو قبل صبغة الأشعة.'] },
+  /* ===== CHRONIC ===== */
+  { id: 'rx-dm-start', cat: 'Chronic', title: 'Starting Type 2 Diabetes Treatment', sub: 'First line',
+    tags: ['diabetes', 'metformin', 't2dm'],
+    text: `1) Metformin 500 mg — one tablet with dinner for one week, then one with breakfast and one with dinner
+   (titrate up to 1 g twice daily as tolerated)
+2) Check fasting glucose twice weekly and record it
+3) HbA1c in 3 months
+4) Referral to a dietitian and diabetes educator
+5) Fundus screening + foot examination + urine ACR`,
+    notes: ['Gastrointestinal effects are common initially and settle with slow titration and taking it after food.',
+      'Hold metformin during dehydration, acute illness, or before contrast imaging.'] },
 
-  { id: 'rx-htn-start', cat: 'مزمن', title: 'بدء علاج ارتفاع الضغط', sub: 'خط أول بدون حالات مصاحبة',
-    tags: ['ضغط', 'أملوديبين', 'hypertension'],
-    text: `1) Amlodipine 5 mg — قرص مرة يومياً (يمكن رفعها إلى 10 مج بعد 4 أسابيع)
-2) قياس الضغط في المنزل مرتين يومياً (صباحاً ومساءً) وتسجيل القراءات لمدة أسبوع قبل كل مراجعة
-3) تقليل الملح إلى أقل من 5 جم يومياً
-4) مشي 30 دقيقة معظم أيام الأسبوع
-5) مراجعة بعد 4 أسابيع مع سجل القراءات`,
-    notes: ['تورّم الكاحلين هو أشيع أثر جانبي للأملوديبين ويقل بتقليل الجرعة أو بإضافة ACEi.', 'إذا وُجد سكري أو بروتين في البول فابدأ بـ ACEi أو ARB بدلاً منه.'] },
+  { id: 'rx-htn-start', cat: 'Chronic', title: 'Starting Antihypertensive Treatment', sub: 'First line, no comorbidity',
+    tags: ['hypertension', 'amlodipine', 'blood pressure'],
+    text: `1) Amlodipine 5 mg — one tablet once daily (may increase to 10 mg after 4 weeks)
+2) Measure blood pressure at home twice daily (morning and evening) and record the readings for one week before each review
+3) Reduce salt to under 5 g daily
+4) Walk 30 minutes on most days of the week
+5) Review in 4 weeks with the reading diary`,
+    notes: ['Ankle swelling is the commonest side effect of amlodipine; it improves with a lower dose or by adding an ACE inhibitor.',
+      'With diabetes or proteinuria, start an ACE inhibitor or ARB instead.'] },
 
-  { id: 'rx-vitd', cat: 'مزمن', title: 'تعويض نقص فيتامين د', sub: 'بالغين',
-    tags: ['فيتامين د', 'vitamin d'],
-    text: `1) Cholecalciferol 50,000 IU — كبسولة مرة واحدة أسبوعياً لمدة 8 أسابيع
-2) ثم Cholecalciferol 1000 – 2000 IU — يومياً كجرعة صيانة
-3) كالسيوم من الغذاء: حليب، لبن، أجبان، ورقيات خضراء
-4) تعرّض للشمس 15 – 20 دقيقة، 3 مرات أسبوعياً
-5) إعادة فحص المستوى بعد 3 شهور`,
-    notes: ['لا تكرر جرعة التحميل دون إعادة قياس.', 'مع سوء الامتصاص أو السمنة قد تُحتاج جرعات أعلى ومتابعة أقرب.'] },
+  { id: 'rx-vitd', cat: 'Chronic', title: 'Vitamin D Replacement', sub: 'Adults',
+    tags: ['vitamin d', 'deficiency'],
+    text: `1) Cholecalciferol 50,000 IU — one capsule once weekly for 8 weeks
+2) Then Cholecalciferol 1000 – 2000 IU daily as maintenance
+3) Dietary calcium: milk, yoghurt, cheese, green leafy vegetables
+4) Sun exposure 15 – 20 minutes, three times weekly
+5) Recheck the level after 3 months`,
+    notes: ['Do not repeat a loading course without remeasuring.',
+      'Malabsorption or obesity may need higher doses and closer follow-up.'] },
 
-  { id: 'rx-iron', cat: 'مزمن', title: 'تعويض نقص الحديد', sub: 'فموي',
-    tags: ['حديد', 'فقر دم', 'anemia'],
-    text: `1) Ferrous sulfate 200 mg (65 mg حديد عنصري) — قرص واحد يوماً بعد يوم على معدة فارغة
-2) مع كوب عصير برتقال أو فيتامين C 500 مج لتحسين الامتصاص
-3) تجنّب الشاي والقهوة والحليب والكالسيوم قبل وبعد الجرعة بساعتين
-4) Macrogol أو ملين خفيف عند الإمساك
-5) إعادة CBC بعد شهر، والاستمرار 3 شهور بعد تصحيح الهيموجلوبين`,
-    notes: ['الجرعة يوماً بعد يوم تُمتص أفضل من الجرعات اليومية المتعددة وأعراضها أقل.', 'اسوداد البراز طبيعي ولا يستدعي القلق.', 'ابحث عن سبب النقص — لا تكتفِ بالتعويض.'] },
+  { id: 'rx-iron', cat: 'Chronic', title: 'Oral Iron Replacement', sub: 'Iron deficiency anaemia',
+    tags: ['iron', 'anaemia', 'ferritin'],
+    text: `1) Ferrous sulfate 200 mg (65 mg elemental iron) — one tablet on alternate days on an empty stomach
+2) With a glass of orange juice or vitamin C 500 mg to improve absorption
+3) Avoid tea, coffee, milk and calcium within two hours either side of the dose
+4) Macrogol or a mild laxative if constipated
+5) Repeat the full blood count after one month, and continue for 3 months after the haemoglobin normalises`,
+    notes: ['Alternate-day dosing is absorbed better than multiple daily doses and causes fewer side effects.',
+      'Black stools are expected and harmless.',
+      'Find the cause — replacement alone is not the treatment.'] },
 ];
 
-/* ===== نصائح مكتوبة للمريض — تُنسخ وتُرسل عبر واتساب ===== */
+/* ===== Patient handouts — copy or send by messaging app ===== */
 window.HANDOUTS = [
+  { id: 'h-inhaler', title: 'How to Use Your Inhaler', tags: ['inhaler', 'asthma', 'spacer', 'copd'],
+    text: `Using your inhaler correctly with a spacer
 
-{ id: 'h-inhaler', title: 'طريقة استخدام البخاخ', tags: ['بخاخ', 'ربو', 'سبيسر'],
-    text: `الطريقة الصحيحة لاستخدام بخاخ الربو مع السبيسر
+1) Shake the inhaler well and fit it into the spacer.
+2) Breathe out fully, away from the spacer.
+3) Put the mouthpiece between your teeth and seal your lips around it.
+4) Press the inhaler once — one puff only.
+5) Breathe in slowly and deeply, then hold your breath for 10 seconds.
+6) Wait 30 to 60 seconds before the next puff, and repeat for each puff separately.
+7) After a steroid inhaler, rinse your mouth with water and spit it out to prevent oral thrush and hoarseness.
 
-1) رجّ البخاخ جيداً ثم ركّبه في السبيسر.
-2) أخرج الزفير بعيداً عن السبيسر.
-3) ضع القطعة الفموية بين أسنانك وأغلق شفتيك حولها بإحكام.
-4) اضغط البخاخ بخة واحدة فقط.
-5) خذ نفساً عميقاً وبطيئاً، ثم احبس النفس 10 ثوانٍ.
-6) انتظر 30 – 60 ثانية قبل البخة التالية، وكرر لكل بخة على حدة.
-7) بعد بخاخ الكورتيزون: تمضمض بالماء وابصقه لمنع فطريات الفم وبحّة الصوت.
+• Wash the spacer weekly with soap and water and let it air dry — do not towel dry it.
+• The preventer inhaler is used every day, even when you feel well, not only during an attack.` },
 
-• نظّف السبيسر أسبوعياً بماء وصابون واتركه يجف في الهواء (لا تجففه بمنشفة).
-• البخاخ الوقائي يُستخدم كل يوم حتى عند الشعور بالتحسن، وليس عند النوبة فقط.` },
+  { id: 'h-warfarin', title: 'Warfarin Patient Instructions', tags: ['warfarin', 'inr', 'anticoagulant'],
+    text: `Important instructions if you take warfarin
 
-  { id: 'h-warfarin', title: 'إرشادات مريض الوارفارين', tags: ['وارفارين', 'inr', 'مميع'],
-    text: `إرشادات مهمة لمن يستخدم الوارفارين
+• Take your dose at the same time every day, preferably in the evening.
+• Never change the dose yourself — only according to your INR result and your doctor's instruction.
+• If you miss a dose: take it the same day if you remember, and never double the dose the next day.
+• Keep every INR appointment.
 
-• خذ الجرعة في نفس الوقت كل يوم، ويفضّل مساءً.
-• لا تغيّر الجرعة من نفسك — فقط بحسب نتيجة INR وتعليمات الطبيب.
-• إذا نسيت جرعة: خذها في نفس اليوم إن تذكرت، ولا تضاعف الجرعة أبداً في اليوم التالي.
-• التزم بموعد فحص INR.
+Diet:
+• Do not avoid green vegetables, but keep the amount you eat steady each week (spinach, parsley, cabbage, broccoli).
+• Avoid sudden changes to your diet.
 
-الغذاء:
-• لا تمتنع عن الخضار الورقية، لكن حافظ على كمية <b>ثابتة</b> منها أسبوعياً (سبانخ، بقدونس، ملفوف، بروكلي).
-• تجنّب التغييرات المفاجئة في النظام الغذائي.
+Warnings:
+• Tell any doctor, dentist or pharmacist that you take warfarin.
+• Do not take any anti-inflammatory (ibuprofen, diclofenac), aspirin, or herbal supplement without checking first.
+• Antibiotics can raise your INR dangerously — see your doctor whenever one is prescribed.
 
-تحذيرات:
-• أخبر أي طبيب أو طبيب أسنان أو صيدلي أنك تستخدم الوارفارين.
-• لا تأخذ أي مضاد التهاب (بروفين، فولتارين) أو أسبرين أو مكمل عشبي بدون استشارة.
-• المضادات الحيوية قد ترفع INR بشكل خطير — راجع طبيبك عند وصف أي منها.
+Go to the emergency department for: bleeding that will not stop, blood in the urine or stool, black stools, vomiting blood, sudden large bruises, or a severe headache after a blow to the head.` },
 
-راجع الطوارئ عند: نزيف لا يتوقف، دم في البول أو البراز، براز أسود، قيء دموي، كدمات كبيرة مفاجئة، أو صداع شديد بعد ضربة على الرأس.` },
+  { id: 'h-dm-sick', title: 'Sick Day Rules for Diabetes', tags: ['diabetes', 'illness', 'insulin'],
+    text: `What to do when you are ill and have diabetes
 
-  { id: 'h-dm-sick', title: 'قواعد الأيام المرضية لمريض السكري', tags: ['سكري', 'مرض', 'انسولين'],
-    text: `ماذا تفعل عند المرض إذا كنت مصاباً بالسكري
+• <b>Never stop your insulin</b>, even if you are not eating — your body needs more of it when you are ill.
+• Check your blood glucose every 4 hours (every 2 hours if it is high).
+• Drink plenty of water — roughly a glass every hour.
+• If you cannot eat, replace meals with carbohydrate-containing fluids (juice, soup, milk).
+• Check for ketones if your glucose is above 250 and you use insulin.
 
-• <b>لا توقف الإنسولين أبداً</b> حتى لو لم تأكل — حاجة الجسم له تزيد أثناء المرض.
-• قِس السكر كل 4 ساعات (أو كل ساعتين إذا كان مرتفعاً).
-• أكثر من شرب الماء — كوب كل ساعة تقريباً.
-• إذا لم تستطع الأكل، استبدل الوجبات بسوائل تحتوي كربوهيدرات (عصير، شوربة، حليب).
-• افحص الكيتون إذا كان السكر أعلى من 250 وكنت تستخدم الإنسولين.
+Hold these medications temporarily during acute illness or dehydration, and speak to your doctor:
+metformin · SGLT2 inhibitors (empagliflozin, dapagliflozin) · diuretics · ACE inhibitors and ARBs.
 
-أوقف هذه الأدوية مؤقتاً أثناء المرض الحاد أو الجفاف واستشر طبيبك:
-الميتفورمين · أدوية SGLT2 (جارديانس، فوركسيجا) · مدرات البول · أدوية الضغط من نوع ACE/ARB.
+Go to the emergency department for: persistent vomiting preventing fluid intake, glucose above 300 that will not come down, positive ketones, severe abdominal pain, rapid deep breathing, or confusion.` },
 
-راجع الطوارئ فوراً عند: قيء مستمر يمنع شرب السوائل، سكر فوق 300 لا ينزل، كيتون موجب، ألم بطن شديد، تنفس سريع وعميق، أو تشوّش في الوعي.` },
+  { id: 'h-hypoglycemia', title: 'Managing Low Blood Sugar', tags: ['hypoglycaemia', 'diabetes', 'insulin'],
+    text: `Low blood sugar — the 15/15 rule
 
-  { id: 'h-hypoglycemia', title: 'التعامل مع هبوط السكر', tags: ['هبوط سكر', 'سكري', 'انسولين'],
-    text: `هبوط السكر — قاعدة 15/15
+Warning signs: shaking, cold sweat, sudden hunger, dizziness, palpitations, confusion, poor concentration.
 
-العلامات: رجفة، تعرّق بارد، جوع مفاجئ، دوخة، خفقان، تشوّش، ضعف تركيز.
+If your glucose is below 70 and you are awake:
+1) Take 15 g of fast sugar: 3 – 4 teaspoons of sugar in water, half a glass of juice, or 3 glucose tablets.
+2) Wait 15 minutes and recheck.
+3) If still below 70, repeat once more.
+4) Once stable, eat a snack with carbohydrate and protein (bread with cheese).
 
-إذا كان السكر أقل من 70 وأنت واعٍ:
-1) تناول 15 جم سكر سريع: 3 – 4 ملاعق صغيرة سكر في ماء، أو نصف كوب عصير، أو 3 أقراص جلوكوز.
-2) انتظر 15 دقيقة ثم أعد القياس.
-3) إذا لا يزال أقل من 70، كرر الخطوة مرة أخرى.
-4) بعد أن يستقر، تناول وجبة خفيفة تحتوي نشويات وبروتين (خبز مع جبن).
+<b>Important:</b> chocolate and ice cream are not fast treatments — the fat slows sugar absorption.
 
-<b>مهم:</b> الشوكولاتة والآيس كريم ليست علاجاً سريعاً — الدهون تبطئ امتصاص السكر.
+If the person loses consciousness: give nothing by mouth. Put them on their side, call an ambulance immediately, and give glucagon if available.
 
-إذا فقد الشخص وعيه: لا تعطه شيئاً بالفم إطلاقاً. ضعه على جانبه واتصل بالإسعاف فوراً، وأعطِ حقنة جلوكاجون إن توفرت.
+After any severe or repeated episode, see your doctor to review the doses.` },
 
-بعد أي هبوط شديد أو متكرر: راجع طبيبك لمراجعة الجرعات.` },
+  { id: 'h-bp-home', title: 'Measuring Blood Pressure at Home', tags: ['blood pressure', 'monitoring', 'home'],
+    text: `How to measure your blood pressure correctly at home
 
-  { id: 'h-bp-home', title: 'قياس الضغط في المنزل', tags: ['ضغط', 'قياس', 'منزل'],
-    text: `الطريقة الصحيحة لقياس ضغط الدم في المنزل
+For 30 minutes before: no coffee, no smoking, no exercise, and empty your bladder.
 
-قبل القياس بـ 30 دقيقة: لا قهوة، لا تدخين، لا رياضة، وأفرغ المثانة.
+Steps:
+1) Sit and rest quietly for 5 minutes before starting.
+2) Back supported, feet flat on the floor, legs uncrossed.
+3) Rest your arm on a table so the cuff is at heart level.
+4) Place the cuff on bare skin, its lower edge 2 – 3 cm above the elbow crease.
+5) Do not talk during the measurement.
+6) Take two readings a minute apart and record the average.
 
-خطوات القياس:
-1) اجلس مرتاحاً 5 دقائق قبل البدء.
-2) الظهر مسند، القدمان على الأرض بدون تشبيك الساقين.
-3) ضع الذراع على طاولة بحيث تكون الكفة بمستوى القلب.
-4) الكفة على الجلد مباشرة، وحافتها السفلى تبعد 2 – 3 سم فوق ثنية المرفق.
-5) لا تتكلم أثناء القياس.
-6) خذ قراءتين بفارق دقيقة، وسجّل المتوسط.
+When: once in the morning before medication and breakfast, and once in the evening before bed, for 7 days before your review.
 
-المواعيد: مرة صباحاً قبل الدواء والإفطار، ومرة مساءً قبل النوم، لمدة 7 أيام قبل المراجعة.
+Record every reading and bring them with you — home readings guide treatment better than clinic readings.
 
-سجّل كل القراءات واحضرها معك — القراءة المنزلية أدق من قراءة العيادة في تقييم العلاج.
+Go to the emergency department if your reading is 180/120 or higher together with: chest pain, shortness of breath, severe headache, visual disturbance, or weakness in a limb.` },
 
-راجع الطوارئ إذا كان الضغط 180/120 أو أكثر مع: ألم صدر، ضيق نفس، صداع شديد، تشوّش رؤية، أو ضعف في أحد الأطراف.` },
+  { id: 'h-back', title: 'Caring for Your Lower Back', tags: ['back', 'pain', 'exercise'],
+    text: `Looking after your lower back
 
-  { id: 'h-back', title: 'العناية بأسفل الظهر', tags: ['ظهر', 'ألم', 'تمارين'],
-    text: `تعليمات العناية بألم أسفل الظهر
+• Keep up your daily activity as much as you can — complete bed rest slows recovery and increases stiffness.
+• Warm compresses for 15 – 20 minutes twice daily.
+• Take pain relief on a regular schedule in the first few days, not only when the pain peaks.
+• Sleep on your side with a pillow between your knees, or on your back with a pillow underneath them.
 
-• استمر في نشاطك اليومي قدر المستطاع — الراحة التامة في السرير تُبطئ الشفاء وتزيد التيبّس.
-• كمادات دافئة 15 – 20 دقيقة مرتين يومياً.
-• خذ المسكن بانتظام في الأيام الأولى وليس عند اشتداد الألم فقط.
-• نم على الجانب مع وسادة بين الركبتين، أو على الظهر مع وسادة تحتهما.
+Lifting:
+• Bend your knees, not your back; hold the object close to you; do not twist while lifting.
 
-عند رفع الأشياء:
-• اثنِ الركبتين لا الظهر، وقرّب الشيء من جسمك، ولا تلتفّ أثناء الرفع.
+At work:
+• Stand and move every 30 to 45 minutes.
+• Set your chair height so your feet rest flat and your lower back is supported.
 
-في العمل:
-• قم وتحرّك كل 30 – 45 دقيقة.
-• اضبط ارتفاع الكرسي بحيث تستقر القدمان على الأرض ويُسند أسفل الظهر.
+Most episodes improve within 2 to 6 weeks.
 
-معظم الحالات تتحسن خلال 2 – 6 أسابيع.
-
-راجع فوراً إذا: ضعف أو خدر في الساقين، تنميل حول منطقة الجلوس، صعوبة أو سلس في التبول أو التبرز، حرارة، أو نقص وزن غير مبرر.` },
+See a doctor immediately if: weakness or numbness in the legs, numbness around the seat area, difficulty or loss of control passing urine or stool, fever, or unexplained weight loss.` },
 ];

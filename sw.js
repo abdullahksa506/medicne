@@ -1,5 +1,5 @@
-/* عامل الخدمة — يجعل الموقع يعمل كاملاً بدون إنترنت */
-const CACHE = 'fm-assist-v3';
+/* Service worker — makes the whole app work offline */
+const CACHE = 'fm-assist-v4';
 
 const ASSETS = [
   './',
@@ -11,8 +11,6 @@ const ASSETS = [
   './assets/js/data-guides.js',
   './assets/js/data-rx.js',
   './assets/js/data-tools.js',
-  './assets/js/data-geriatrics.js',
-  './assets/js/calc-geriatrics.js',
   './assets/js/note-forms.js',
   './assets/js/note-engine.js',
   './assets/js/note-ui.js',
@@ -38,7 +36,7 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* شبكة أولاً ثم الكاش للتنقل، وكاش أولاً للملفات الثابتة */
+/* Network-first for navigation, cache-first for static assets */
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;

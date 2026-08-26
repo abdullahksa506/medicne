@@ -23,75 +23,6 @@
     return {};
   }
 
-  /* ============ practice scenarios (mode = drill) ============ */
-  const DRILLS = [
-    {
-      id: 'd1', level: 'Straightforward',
-      stem: '62 y/o married female, non-smoker, known T2DM on Metformin 1g BD and HTN on Amlodipine 5mg OD. ' +
-        'Routine follow-up for lab results. Feels well. HbA1c 7.9%, was 7.2% six months ago. Admits missing the evening ' +
-        'Metformin dose two to three times a week. Home BP readings 125-135/75-85. BP today 128/78, HR 76, T 36.8, SpO2 98%. ' +
-        'Foot exam normal, fundus up to date.',
-      ask: 'Write the Assessment section only — one line per problem.',
-      model: '- T2DM (uncontrolled, HbA1c 7.9%, rising from 7.2%): adherence gap identified — missing evening dose 2-3x/week; for adherence counselling and dietitian referral, recheck 3/12\n' +
-        '- HTN (controlled, 128/78, home readings consistent): no change today',
-      points: ['Both lines end in an action (A1).', 'Both carry a number (A2).',
-        'The diabetes line shows direction, not a bare value (A3).', 'The hypertension line is explicitly marked "no change today" rather than left silent (A7).'],
-    },
-    {
-      id: 'd2', level: 'Red flag hidden in a routine visit',
-      stem: '55 y/o male, smoker 25 pack-year, known dyslipidaemia on Atorvastatin 20mg. Came for a routine refill. ' +
-        'Mentions in passing that for the last three weeks he gets a central chest heaviness when he walks up the hill to ' +
-        'his house, which settles after a few minutes of rest. No pain at rest. BP 142/88, HR 80, ECG today shows sinus ' +
-        'rhythm with no acute changes.',
-      ask: 'Write the Assessment section. Decide what the leading problem is.',
-      model: '- Exertional chest pain (3 weeks, reproducible on exertion and relieved by rest, ECG today with no acute changes): ' +
-        'features consistent with stable angina in a patient with multiple risk factors — a normal resting ECG does not exclude it; ' +
-        'for urgent cardiology referral, aspirin and GTN started, discussed same-day ER return criteria\n' +
-        '- Dyslipidaemia (on Atorvastatin 20mg, LDL not available today): for high-intensity statin given the new presentation; lipid panel requested\n' +
-        '- Smoking (25 pack-year): cessation advice given, referred to cessation clinic; also meets criteria for lung cancer screening',
-      points: ['The exertional pain goes first — the problem acted on today leads (A7).',
-        'The reassuring ECG is named and explicitly not allowed to close the case (R4).',
-        'Statin intensity is revisited because the clinical picture changed.',
-        'The pack-year number triggers a screening action rather than sitting as a descriptor.'],
-    },
-    {
-      id: 'd3', level: 'Patient disagreement',
-      stem: '38 y/o female, no chronic illness. Two months of tiredness. Sleeps 5 hours a night, two young children. ' +
-        'No weight loss, no night sweats, no lymphadenopathy, no bleeding. Exam normal, no pallor. She is asking for a ' +
-        'full body MRI because a relative was recently diagnosed with cancer. You explained why it is not indicated, she ' +
-        'was not satisfied, you offered a targeted blood panel and she accepted.',
-      ask: 'Write the Assessment section, including how you document the disagreement.',
-      model: '- Fatigue (2 months, with a clearly identified sleep deficit of ~5 hours/night, no B symptoms, examination normal): ' +
-        'most consistent with sleep insufficiency; for CBC, ferritin, TSH, vitamin D to exclude common reversible causes, and sleep hygiene counselling\n' +
-        '- Request for whole-body MRI: explained in detail that it is not indicated in the absence of red flags and carries incidental-finding harm, ' +
-        'but still insisting; not ordered, rationale documented; targeted blood panel offered and accepted\n' +
-        '- Family history of malignancy: reviewed, does not currently change screening thresholds; no indication for imaging at this stage',
-      points: ['The disagreement uses all four parts in order (A6).',
-        'The negatives she does not have are named — that is what shows the differential (A4).',
-        'The deliberate non-action carries its reason (A5).',
-        '"Still insisting" describes behaviour; "demanding" would label the person (R6).'],
-    },
-    {
-      id: 'd4', level: 'Geriatric complexity',
-      stem: '81 y/o male, lives with his daughter. Known T2DM on Gliclazide 80mg BD and Insulin glargine 20 units nocte, ' +
-        'HTN on Amlodipine 10mg and Indapamide, osteoarthritis on regular Ibuprofen. Two falls in the last four months, ' +
-        'both on standing up at night. HbA1c 6.4%. BP 148/78 lying, 122/70 standing. eGFR 41. Clinical Frailty Scale 6.',
-      ask: 'Write the Assessment section. There are at least four problems here worth a line each.',
-      model: '- Recurrent falls (2 in 4 months, both postural, orthostatic drop 26 systolic confirmed today, CFS 6): ' +
-        'multifactorial with a dominant drug contribution; for medication review as below, physiotherapy referral and home hazard assessment\n' +
-        '- T2DM (overtreated, HbA1c 6.4% on Gliclazide and insulin, target for this frailty level is <8.0-8.5%): ' +
-        'for Gliclazide stopped and glargine reduced to 14 units, recheck 6/52\n' +
-        '- HTN (148/78 lying but 122/70 standing with symptoms): for Indapamide stopped and postural BP rechecked 2/52; ' +
-        'standing readings will guide any further change\n' +
-        '- Osteoarthritis on regular NSAID with eGFR 41: Ibuprofen stopped given renal impairment and fall risk; ' +
-        'for regular Paracetamol 1g TDS and topical Diclofenac',
-      points: ['The frailty score is used as a number that sets the targets, not as a label (A2).',
-        'HbA1c 6.4% is correctly read as overtreatment rather than success — the commonest miss in this age group.',
-        'Each drug change carries a specific new dose and a recheck interval (A1).',
-        'The NSAID line documents a stop with its reason — deliberate non-action made explicit (A5).'],
-    },
-  ];
-
   /* ============ shared render helpers ============ */
 
   function fieldControl(f, onChange) {
@@ -101,6 +32,38 @@
     if (f.why) wrap.appendChild(el('div', 'field__why', esc(f.why)));
 
     const set = v => { DATA[f.id] = v; saveDraft(); onChange(); };
+
+    if (f.type === 'builder') {
+      const ta = el('textarea');
+      ta.placeholder = f.placeholder || (f.example ? 'e.g. ' + f.example : '');
+      ta.style.minHeight = '150px';
+      if (DATA[f.id]) ta.value = DATA[f.id];
+      ta.addEventListener('input', () => set(ta.value));
+
+      const insert = line => {
+        const cur = ta.value.replace(/\s+$/, '');
+        ta.value = (cur ? cur + '\n' : '') + line;
+        set(ta.value);
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+      };
+
+      const groups = typeof f.groups === 'function' ? f.groups(DATA) : (f.groups || []);
+      groups.forEach(g => {
+        wrap.appendChild(el('div', 'builder__grp', esc(g.label)));
+        const box = el('div', 'chips');
+        g.lines.forEach(line => {
+          const c = el('button', 'chip chip--add', '+ ' + esc(line));
+          c.type = 'button';
+          c.addEventListener('click', () => insert(line));
+          box.appendChild(c);
+        });
+        wrap.appendChild(box);
+      });
+      wrap.appendChild(el('div', 'builder__grp', 'Other — write your own'));
+      wrap.appendChild(ta);
+      return wrap;
+    }
 
     if (f.type === 'multiselect') {
       const cur = () => Array.isArray(DATA[f.id]) ? DATA[f.id] : [];
@@ -129,7 +92,7 @@
       if (f.allowCustom) {
         const extra = el('input');
         extra.type = 'text';
-        extra.placeholder = 'Add your own…';
+        extra.placeholder = 'Other — type it and press enter';
         extra.addEventListener('change', () => {
           if (!extra.value.trim()) return;
           const a = cur().slice();
@@ -188,15 +151,15 @@
     return wrap;
   }
 
-  /* ============ page: hub ============ */
-  function pageHub(view, setTop, showSearch) {
+  /* ============ page: pick the visit ============ */
+  function pageVisitPicker(view, setTop, showSearch) {
     view.classList.add('en');
-    setTop('Progress Note', false);
+    setTop('Write a note', false);
     showSearch(false);
 
     view.appendChild(el('div', 'note-hero',
-      '<div class="note-hero__t">FM Progress Note Assistant</div>' +
-      '<div class="note-hero__d">Structured OPD notes in house format — and feedback that teaches you to write them without it. ' +
+      '<div class="note-hero__t">Progress Note</div>' +
+      '<div class="note-hero__d">Fill the blanks, pick the problems, and the form asks only what those problems need. ' +
       'Every note is a <b>draft</b> the treating physician must read, correct and sign.</div>'));
 
     const hist = window.NoteEngine.history();
@@ -207,52 +170,25 @@
         'Last ' + last.length + ' notes — average rubric ' + avg + '/10 · latest ' + last[last.length - 1].total + '/10'));
     }
 
-    view.appendChild(el('div', 'sec-title', 'Modes'));
-    const modes = [
-      { t: 'Write a note', d: 'Pick the visit type, fill an adaptive form, get the note plus feedback', r: '#/note/new' },
-      { t: 'Critique my note', d: 'Paste a note you wrote — get the rubric and a corrected Assessment', r: '#/note/critique' },
-      { t: 'Quick expand', d: 'Shorthand in, full note out, every gap left as a visible placeholder', r: '#/note/expand' },
-      { t: 'Practice', d: 'Worked scenarios with a model answer and the rules behind it', r: '#/note/drill' },
-    ];
+    view.appendChild(el('div', 'sec-title', 'Visit type'));
     const list = el('div', 'list');
-    modes.forEach(m => {
+    window.NOTE_VISITS.forEach(v => {
       const a = el('a', 'row');
-      a.href = m.r;
-      a.innerHTML = '<span class="row__body"><span class="row__t">' + m.t + '</span><span class="row__d">' + m.d + '</span></span>' +
+      a.href = '#/note/new/' + v.id;
+      a.innerHTML = '<span class="row__body"><span class="row__t">' + esc(v.label) + '</span></span>' +
         '<span class="row__chev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span>';
       list.appendChild(a);
     });
     view.appendChild(list);
 
     view.appendChild(el('div', 'note-rules',
-      '<b>House rules this tool enforces</b>' +
+      '<b>What this tool will not do</b>' +
       '<ul>' +
       '<li>It never invents a finding, a vital sign, a lab value or a diagnosis. Gaps become <span class="ph">[ TO COMPLETE: … ]</span> and the copy button stays locked until none remain.</li>' +
-      '<li>Red flags you entered are surfaced as unresolved concerns — they are never smoothed into a reassuring line.</li>' +
+      '<li>Red flags you entered are surfaced as unresolved concerns — never smoothed into a reassuring line.</li>' +
       '<li>Judgemental words are rewritten neutrally before they reach the record, and you are told which and why.</li>' +
       '<li>Patient identifiers are stripped. Age and sex only.</li>' +
-      '<li>Every note ends with ER instructions and a follow-up interval.</li>' +
       '</ul>'));
-  }
-
-  /* ============ page: visit picker ============ */
-  function pageVisitPicker(view, setTop, showSearch) {
-    view.classList.add('en');
-    setTop('Choose visit type', true);
-    showSearch(false);
-    view.appendChild(el('div', 'note-note',
-      'The form adapts to the complaint — a palpitation visit and a diabetes follow-up do not produce the same fields.'));
-    const list = el('div', 'list');
-    window.NOTE_VISITS.forEach(v => {
-      const a = el('a', 'row');
-      a.href = '#/note/new/' + v.id;
-      a.innerHTML = '<span class="row__body"><span class="row__t">' + esc(v.label) + '</span>' +
-        '<span class="row__d">' + esc(v.ar) + '</span></span>' +
-        (v.geri ? '<span class="row__tag">كبار السن</span>' : '') +
-        '<span class="row__chev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span>';
-      list.appendChild(a);
-    });
-    view.appendChild(list);
   }
 
   /* ============ page: the form ============ */
@@ -293,7 +229,7 @@
     };
 
     sections.forEach(s => {
-      const title = el('div', 'sec-title', s.title + ' · ' + s.ar);
+      const title = el('div', 'sec-title', s.title);
       const card = el('div', 'card');
       s.fields.forEach(f => {
         const node = fieldControl(f, update);
@@ -456,144 +392,8 @@
     });
   }
 
-  /* ============ page: critique ============ */
-  function pageCritique(view, setTop, showSearch, toast, copyText) {
-    view.classList.add('en');
-    setTop('Critique my note', true);
-    showSearch(false);
-    view.appendChild(el('div', 'note-note',
-      'Paste a note you already wrote. You get the rubric, the teaching points, and a corrected <b>Assessment section only</b> — ' +
-      'rewriting the whole note for you teaches nothing.'));
-    const card = el('div', 'card');
-    const ta = el('textarea');
-    ta.style.minHeight = '220px';
-    ta.placeholder = 'Paste the full note here…';
-    card.appendChild(ta);
-    view.appendChild(card);
-
-    const out = el('div');
-    const btn = el('button', 'btn', 'Critique');
-    btn.addEventListener('click', () => {
-      const t = ta.value.trim();
-      if (t.length < 40) { toast('Paste a longer note'); return; }
-      const c = window.NoteEngine.critique(t);
-      out.innerHTML = '';
-      renderRubric(out, c.rubric);
-      renderTeaching(out, c.teaching);
-      out.appendChild(el('div', 'sec-title', 'Corrected Assessment'));
-      const pre = el('pre', 'notebox');
-      pre.innerHTML = esc(c.corrected).replace(/\[ TO COMPLETE: ([^\]]+) \]/g, '<span class="ph">[ TO COMPLETE: $1 ]</span>');
-      out.appendChild(pre);
-      const cp = el('button', 'btn btn--ghost', 'Copy corrected Assessment');
-      cp.addEventListener('click', () => copyText(c.corrected));
-      out.appendChild(cp);
-      out.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    view.appendChild(btn);
-    view.appendChild(out);
-  }
-
-  /* ============ page: expand ============ */
-  function pageExpand(view, setTop, showSearch, toast, copyText) {
-    view.classList.add('en');
-    setTop('Quick expand', true);
-    showSearch(false);
-    view.appendChild(el('div', 'note-note',
-      'The fast path for a busy clinic. Type shorthand — everything it cannot read from you becomes a visible placeholder. ' +
-      'The placeholders are what keep it honest.'));
-    const card = el('div', 'card');
-    const ta = el('textarea');
-    ta.placeholder = 'e.g. 55F DM2 HTN routine, A1c 8.1 up from 7.4, misses evening dose, BP 138/84, HR 78, T 36.7, SpO2 98';
-    card.appendChild(ta);
-    view.appendChild(card);
-    const out = el('div');
-    const btn = el('button', 'btn', 'Expand to note');
-    btn.addEventListener('click', () => {
-      const t = ta.value.trim();
-      if (t.length < 8) { toast('Type a little more'); return; }
-      const R = window.NoteEngine.expand(t);
-      RESULT = R;
-      out.innerHTML = '';
-      out.appendChild(el('div', 'note-note', 'Read as: <b>' + esc(R.visit.label) + '</b>. ' +
-        R.placeholderCount + ' placeholder(s) left for you.'));
-      const pre = el('pre', 'notebox');
-      pre.innerHTML = esc(R.note).replace(/\[ TO COMPLETE: ([^\]]+) \]/g, '<span class="ph">[ TO COMPLETE: $1 ]</span>');
-      out.appendChild(pre);
-      const row = el('div', 'btnrow');
-      const cp = el('button', 'btn btn--row' + (R.placeholderCount ? ' btn--locked' : ''),
-        R.placeholderCount ? 'Copy locked — ' + R.placeholderCount + ' to complete' : 'Copy note');
-      if (R.placeholderCount) cp.disabled = true;
-      cp.addEventListener('click', () => copyText(R.note));
-      const full = el('button', 'btn btn--row btn--ghost', 'Open full form');
-      full.addEventListener('click', () => {
-        VISIT = R.visit; DATA = R.parsed; saveDraft();
-        location.hash = '#/note/new/' + R.visit.id;
-      });
-      row.append(cp, full);
-      out.appendChild(row);
-      renderRubric(out, R.rubric);
-      out.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    view.appendChild(btn);
-    view.appendChild(out);
-  }
-
-  /* ============ page: drill ============ */
-  function pageDrill(view, setTop, showSearch, toast) {
-    view.classList.add('en');
-    setTop('Practice', true);
-    showSearch(false);
-
-    const hist = window.NoteEngine.history();
-    const avg = hist.length ? hist.slice(-5).reduce((a, b) => a + b.total, 0) / Math.min(5, hist.length) : 0;
-    const start = avg >= 8 ? 1 : 0;
-
-    view.appendChild(el('div', 'note-note',
-      'Read the scenario, write your answer, then reveal the model answer and compare. ' +
-      (hist.length ? 'Your recent rubric average is ' + avg.toFixed(1) + '/10, so start around scenario ' + (start + 1) + '.' : '')));
-
-    DRILLS.forEach((d, i) => {
-      const card = el('div', 'card');
-      card.appendChild(el('h3', null, 'Scenario ' + (i + 1) + ' — ' + esc(d.level)));
-      card.appendChild(el('p', null, esc(d.stem)));
-      card.appendChild(el('div', 'note-note', '<b>Task:</b> ' + esc(d.ask)));
-      const ta = el('textarea');
-      ta.placeholder = 'Write your answer here first…';
-      card.appendChild(ta);
-
-      const rev = el('button', 'btn btn--ghost', 'Check my answer');
-      const ans = el('div');
-      ans.hidden = true;
-      rev.addEventListener('click', () => {
-        if (ans.hidden) {
-          if (ta.value.trim().length < 20) { toast('Write your attempt first — that is the whole point'); return; }
-          const a = window.NoteEngine.analyseAssessment(ta.value);
-          ans.innerHTML = '';
-          const self = el('div', 'note-note',
-            'Your answer: ' + a.lines.length + ' line(s), ' + a.withAction + ' ending in an action, ' +
-            a.withNumber + ' carrying a number' + (a.withDirection ? ', ' + a.withDirection + ' showing direction' : '') + '.');
-          ans.appendChild(self);
-          ans.appendChild(el('div', 'teach__lbl', 'Model answer'));
-          ans.appendChild(el('pre', 'notebox', esc(d.model)));
-          ans.appendChild(el('div', 'teach__lbl', 'Why it scores'));
-          const ul = el('ul');
-          d.points.forEach(p => ul.appendChild(el('li', null, esc(p))));
-          const c2 = el('div', 'card');
-          c2.appendChild(ul);
-          ans.appendChild(c2);
-          ans.hidden = false;
-          rev.textContent = 'Hide model answer';
-        } else { ans.hidden = true; rev.textContent = 'Check my answer'; }
-      });
-      card.appendChild(rev);
-      card.appendChild(ans);
-      view.appendChild(card);
-    });
-  }
-
   window.NoteUI = {
-    hub: pageHub, picker: pageVisitPicker, form: pageForm, result: pageResult,
-    critique: pageCritique, expand: pageExpand, drill: pageDrill,
+    picker: pageVisitPicker, form: pageForm, result: pageResult,
     hasResult: () => !!RESULT,
   };
 })();

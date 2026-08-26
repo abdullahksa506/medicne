@@ -1,136 +1,146 @@
-# مساعد طبيب الأسرة
+# Family Medicine Assistant
 
-موقع ويب موجّه للجوال يعمل **بدون إنترنت**، صُمّم ليختصر ثواني الطبيب أثناء انشغاله في العيادة:
-مرجع سريع، حاسبات سريرية، وصفات ونصائح جاهزة للنسخ بضغطة واحدة —
-مع **مساعد كتابة تقرير العيادة** و**قسم موسّع لطب كبار السن**.
+A mobile-first web app that works **offline**, built to save a busy family physician seconds in clinic:
+a progress note writer, clinical calculators, concise guides, and ready prescriptions.
 
-> جرد كامل بالإنجليزية لكل ما يقدمه الموقع: [`docs/FM-Assistant-Capabilities.pdf`](docs/FM-Assistant-Capabilities.pdf)
-> يُولَّد من بيانات التطبيق نفسها بـ `node tools/build-capability-pdf.js out.pdf` فلا يتأخر عن الكود.
+> Full capability inventory: [`docs/FM-Assistant-Capabilities.pdf`](docs/FM-Assistant-Capabilities.pdf)
+> Regenerate it from the live app data with `node tools/build-capability-pdf.js out.pdf` so it never drifts from the code.
 
-## مساعد التقرير (Progress Note)
+## Progress Note
 
-أداة توثيق من مرحلتين: نموذج يتكيّف مع الشكوى، ثم تقرير بصيغة القسم مع تغذية راجعة وتقييم من 10.
-تعمل كلها على الجهاز — بلا مفتاح API وبلا اتصال شبكة وبلا خروج أي بيانات مريض.
-**نص التقرير بالإنجليزية دائماً** لأن النظام الطبي والفريق بالإنجليزية.
+The primary feature, and it has exactly one job: write a note. Pick a visit type, fill the blanks,
+and the form asks only what the selected problems actually need.
 
-ما تفرضه الأداة:
+**The form adapts as you answer.** Selecting *Hypertension* reveals the home BP readings and the
+postural-symptom screen; deselecting it hides them again. Selecting *Diabetes* brings up hypoglycaemia
+episodes, complication screening and osmotic symptoms. The same applies to smoking (pack-years),
+sex (menstrual cycle), and patient disagreement (the four-part sequence).
 
-- **لا تخترع محتوى سريرياً.** أي حقل مطلوب فارغ يصبح `[ TO COMPLETE: ... ]` بالأحمر، وزر النسخ يبقى مقفلاً حتى لا يتبقى أي منها.
-- **العلامات الحمراء تُعرض ولا تُموّه** — تنبيه يحتاج قراراً صريحاً (قبول أو تجاهل) ويُسجَّل. وإن كان تقييمك يحملها فعلاً فالأداة تثني عليك بدلاً من إزعاجك.
-- **الألفاظ الحكمية تُعاد صياغتها** قبل أن تصل للسجل، مع إخبارك بالكلمة والسبب.
-- **معرّفات المريض تُحذف** — العمر والجنس فقط.
-- **كل تقرير ينتهي بشبكة أمان**: تعليمات الطوارئ وموعد المراجعة.
+An answer to a question that is no longer displayed stays in memory — so toggling back restores it —
+but it **never reaches the note**. What the clinician cannot see must not become a finding in the record.
 
-أربعة أوضاع: كتابة تقرير · نقد تقرير كتبته · توسيع اختصار سريع · تمارين بأجوبة نموذجية.
+**Assessment and Plan are built by tapping.** Ready-made lines, scoped to the problems you picked,
+insert into a freely editable box underneath. A template when one fits, a blank box when none does.
+Every option list also carries an **Other** escape for anything not on it.
 
-## الفكرة
+### What it will not do
 
-في عيادة مزدحمة، المشكلة ليست نقص المعلومة بل تكلفة الوصول إليها. كل شاشة هنا مبنية على قاعدة واحدة:
-**أقل من ثلاث لمسات من فتح التطبيق إلى المعلومة التي تحتاجها.**
+- **Never invents clinical content.** Any required field left blank becomes a visible `[ TO COMPLETE: … ]`
+  placeholder in red, and the copy button stays locked until none remain.
+- **Red flags are surfaced, never smoothed over.** They raise an alert needing an explicit acknowledge or
+  dismiss, and that choice is logged. If your assessment already carries the flag, it says so instead of nagging.
+- **Judgemental language is rewritten** before it reaches the record — "non-compliant" becomes "admits missing
+  doses" — and you are told which word and why.
+- **Patient identifiers are stripped.** Age and sex only.
+- **Every note ends with safety netting**: ER instructions and a follow-up interval, auto-suggested from the
+  complaint if left blank and flagged as auto-suggested so you review them.
+- **Mean BP is computed** from your systolic and diastolic rather than asked for.
 
-## قسم كبار السن
+It runs entirely on the device — no API key, no network call, no patient data leaving the phone.
 
-القسم الأكبر في التطبيق وله صفحة تجميع خاصة تفتح من الواجهة مباشرة. مبني حول فكرة أن
-**درجة الهشاشة تسبق كل قرار آخر**: هي التي تحدّد أهداف الضغط والسكر، وأي دواء يستحق الاستمرار،
-ومتى يبدأ نقاش أهداف الرعاية.
+## Content
 
-| المجال | ما فيه |
+| Section | What is in it |
 |---|---|
-| **مقاييس التقييم** | مقياس الهشاشة السريري (CFS) · الاستقلالية الوظيفية (Katz) · Mini-Cog · 4AT للهذيان · GDS-15 · الحمل المضاد للكولين · خطر السقوط · هبوط الضغط الوضعي · فرز سوء التغذية |
-| **أدلة سريرية** | الخرف · الهياج والسلوك · الهذيان · السقوط · هشاشة العظام · تعدد الأدوية وإيقافها · سلس البول · السكري والضغط في كبار السن · الأرق · نقص الوزن · الرعاية التلطيفية · قرح الفراش · الجراثيم البولية بلا أعراض |
-| **أدوات مرجعية** | أدوية يُتجنّب وصفها (Beers) · التقييم الشامل في زيارة واحدة · مصالحة الأدوية بعد الخروج من المستشفى |
-| **للأسرة** | منع السقوط في المنزل · التعامل مع التشوّش والهياج · بطاقة أدويتي · دعم مقدّم الرعاية |
+| **Calculators** | 16: BMI · eGFR (CKD-EPI 2021) · creatinine clearance · ASCVD · CHA₂DS₂-VASc · HAS-BLED · Centor/McIsaac · Wells DVT · PHQ-9 · GAD-7 · FIB-4 · HbA1c converter · corrected calcium · anion gap · gestational age · pack-years |
+| **Guides** | 19 common family medicine conditions — diagnosis, targets, treatment steps, referral thresholds |
+| **Prescriptions** | 18 complete prescriptions, copied to the clipboard in one tap |
+| **Handouts** | 6 patient instruction sheets to send or print |
+| **Tools** | Adult immunisation · preventive screening · red flags · antibiotics · renal dosing · documentation templates · the 10-minute consultation |
 
-المحتوى يركّز عمداً على الأخطاء الشائعة في هذه الفئة: علاج الجراثيم البولية بلا أعراض،
-ونسبة الهذيان الحاد إلى "كبر السن"، ومضادات الذهان في الخرف، والمنوّمات، وفرط علاج السكري.
+## What actually saves time
 
-## المحتوى
+- **One search across everything** — type "diabetes" or "dose" and the calculator, guide and prescription all come back.
+- **One-tap copy** — prescriptions and documentation templates to the clipboard, handouts to a messaging app.
+- **Recently used** — the home screen remembers your last eight pages.
+- **Live results** — calculators compute as you type, with the result pinned to the bottom of the screen while you scroll.
+- **Interpretation, not just a number** — every result carries its band and the practical next step.
+- **Works with no signal** — fully offline after the first load.
 
-| القسم | ما فيه |
-|---|---|
-| **الحاسبات** | 25 حاسبة، منها 9 لكبار السن: BMI · eGFR (CKD-EPI 2021) · تصفية الكرياتينين · ASCVD · CHA₂DS₂-VASc · HAS-BLED · Centor/McIsaac · Wells للجلطة · PHQ-9 · GAD-7 · FIB-4 · تحويل HbA1c · الكالسيوم المصحّح · الفجوة الأنيونية · جرعة الطفل بالمليلتر · سوائل الصيانة · عمر الحمل · سنوات العلبة |
-| **الأدلة السريعة** | 33 حالة شائعة في طب الأسرة — تشخيص، أهداف، خطوات علاج، وعلامات تحويل |
-| **الوصفات الجاهزة** | 21 وصفة كاملة قابلة للنسخ مباشرة إلى النظام الطبي |
-| **نصائح للمريض** | 10 أوراق إرشادية بالعربية تُرسل عبر واتساب أو تُطبع |
-| **أدوات مرجعية** | تطعيمات البالغين · الفحوصات الوقائية · العلامات الحمراء · المضادات الحيوية · تعديل الجرعات كلوياً · قوالب التوثيق · هيكل الزيارة السريعة |
+## Running it
 
-## ما يوفّر الوقت فعلياً
-
-- **بحث واحد يغطي كل شيء** — اكتب "سكري" أو "جرعة" أو "حلق" وتصلك الحاسبة والدليل والوصفة معاً. البحث يتجاهل الهمزات والتشكيل، فلا يحتاج كتابة دقيقة.
-- **نسخ بضغطة** — الوصفات وقوالب التوثيق تُنسخ جاهزة، ونصائح المريض تُرسل مباشرة عبر واتساب.
-- **"استخدمتها مؤخراً"** — الصفحة الرئيسية تتذكر آخر ثماني صفحات فتحتها، فالحالات المتكررة تصبح لمسة واحدة.
-- **نتيجة لحظية** — الحاسبات تحسب أثناء الكتابة بلا زر "احسب"، والنتيجة تبقى ملتصقة أسفل الشاشة أثناء التمرير.
-- **تفسير لا رقم فقط** — كل نتيجة تأتي بتصنيفها وبالخطوة العملية التالية.
-- **يعمل بدون شبكة** — بعد أول فتح يعمل كاملاً بلا إنترنت، وهو ما يهم في العيادات ذات التغطية الضعيفة.
-
-## التشغيل
-
-الموقع ملفات ثابتة بلا أي اعتماديات أو خطوة بناء:
+Static files, no dependencies and no build step:
 
 ```bash
 npx http-server -p 8080
-# ثم افتح http://localhost:8080
+# then open http://localhost:8080
 ```
 
-للنشر: ارفع المجلد كما هو على أي استضافة ثابتة (GitHub Pages، Netlify، Cloudflare Pages).
-يجب أن يكون النطاق عبر HTTPS ليعمل الوضع دون إنترنت والنسخ إلى الحافظة.
+To deploy: upload the folder as-is to any static host (GitHub Pages, Netlify, Cloudflare Pages).
+HTTPS is required for offline mode and clipboard access.
 
-### التثبيت على الجوال
+### Installing on a phone
 
-افتح الموقع في المتصفح ← قائمة المشاركة ← **"إضافة إلى الشاشة الرئيسية"**.
-سيظهر كتطبيق مستقل بأيقونته الخاصة ويعمل بدون إنترنت.
+Open the site in the browser, then **Add to Home Screen**. It runs as a standalone app with its own icon
+and works offline.
 
-## البنية
+### Single-file build
+
+`node tools/build-single-file.js out.html` inlines the whole app into one HTML file for quick preview or sharing.
+
+## Structure
 
 ```
-index.html                  الهيكل وشريط التنقل السفلي
-manifest.webmanifest        إعدادات تثبيت التطبيق
-sw.js                       عامل الخدمة — التخزين للعمل دون إنترنت
-assets/css/app.css          التصميم، الوضع الليلي، دعم RTL
-assets/js/app.js            التوجيه، البحث، عرض الصفحات، النسخ
-assets/js/calculators.js    محرك الحاسبات + 18 حاسبة
-assets/js/data-guides.js    الأدلة السريرية
-assets/js/data-rx.js        الوصفات ونصائح المرضى
-assets/js/data-tools.js     الأدوات المرجعية والقوالب
-assets/js/calc-geriatrics.js  مقاييس كبار السن
-assets/js/data-geriatrics.js  أدلة وأدوات ووصفات وإرشادات كبار السن
-assets/js/note-forms.js     نماذج الزيارات لمساعد التقرير
-assets/js/note-engine.js    بناء التقرير والتقييم والتغذية الراجعة
-assets/js/note-ui.js        واجهة مساعد التقرير
-tools/build-capability-pdf.js  توليد جرد الميزات بالإنجليزية
+index.html                      shell and bottom navigation
+manifest.webmanifest            install settings
+sw.js                           service worker — offline caching
+assets/css/app.css              design, dark mode
+assets/js/app.js                routing, search, page rendering, copy
+assets/js/calculators.js        calculator engine and all calculators
+assets/js/data-guides.js        clinical guides
+assets/js/data-rx.js            prescriptions and patient handouts
+assets/js/data-tools.js         reference tools and templates
+assets/js/note-forms.js         visit templates, conditional fields, assessment and plan libraries
+assets/js/note-engine.js        note assembly, rubric, teaching feedback
+assets/js/note-ui.js            progress note interface
+tools/build-capability-pdf.js   capability inventory PDF
+tools/build-single-file.js      single-file bundle
 ```
 
-المحتوى موجّه للبالغين وكبار السن. لا يحتوي الموقع محتوى طب أطفال.
+Content is adult and older-adult family medicine. There is no paediatric content.
 
-ملفا كبار السن يضيفان محتواهما إلى نفس المصفوفات (`window.GUIDES` وأخواتها) بعلامة `geri: true`،
-فتلتقطهما صفحة التجميع والبحث تلقائياً.
+### Adding content
 
-### إضافة محتوى
+All content is data, separate from the code. Add an object to the right array and it appears in the lists
+and in search automatically.
 
-كل المحتوى بيانات منفصلة عن الكود — تُضاف بإدخال كائن جديد إلى المصفوفة المناسبة،
-ويظهر تلقائياً في القوائم وفي البحث بدون أي تعديل آخر.
-
-**دليل جديد** في `data-guides.js`:
+**A new guide** in `data-guides.js`:
 
 ```js
 {
-  id: 'anemia-b12', cat: 'دم', title: 'نقص فيتامين B12', sub: 'تشخيص وتعويض',
-  tags: ['b12', 'فيتامين', 'تنميل'],
+  id: 'anemia-b12', cat: 'Haematology', title: 'Vitamin B12 Deficiency', sub: 'Diagnosis and replacement',
+  tags: ['b12', 'vitamin', 'neuropathy'],
   blocks: [
-    { h: 'عنوان فرعي' },
-    { p: 'فقرة نصية.' },
-    { ul: ['نقطة', 'نقطة أخرى'] },
-    { note: 'تنبيه مهم', kind: 'warn' },      // info · warn · danger · ok
-    { table: { head: ['عمود', 'عمود'], rows: [['خانة', 'خانة']] } },
-    { copy: 'نص قابل للنسخ بزر' },
+    { h: 'Subheading' },
+    { p: 'A paragraph.' },
+    { ul: ['A point', 'Another point'] },
+    { note: 'Something important', kind: 'warn' },   // info · warn · danger · ok
+    { table: { head: ['Column', 'Column'], rows: [['Cell', 'Cell']] } },
+    { copy: 'Text with a copy button' },
   ],
 }
 ```
 
-**حاسبة جديدة** في `calculators.js` — نوعان: `form` بحقول ودالة حساب، أو `score` بنقاط ونطاقات تفسير.
+**A new conditional question** in `note-forms.js` — add `when` to any field:
 
-## تنبيه
+```js
+F('statin_status', 'Statin', 'select', {
+  required: true,
+  when: picked('conditions', 'Dyslipidaemia'),   // only shown when that problem is selected
+  options: ['On statin, tolerating well', 'On statin with muscle symptoms', 'Not on a statin'],
+  redFlags: ['On statin with muscle symptoms'],
+  example: 'On statin, tolerating well',
+  why: 'One line on why this question matters clinically.',
+})
+```
 
-هذه أداة **دعم قرار** موجّهة للكوادر الصحية المؤهلة، ولا تُغني عن الحكم السريري ولا عن المراجع المعتمدة.
-الجرعات والبروتوكولات مراجع سريعة تحتاج التحقق من البروتوكول المعتمد محلياً ومن نشرة الدواء قبل التطبيق،
-وجداول التطعيمات تتغيّر دورياً فيجب مطابقتها مع الجدول الوطني المحدّث.
+**A new calculator** in `calculators.js` — either `form` (fields plus a compute function) or
+`score` (point items plus interpretation bands).
+
+## Disclaimer
+
+Clinical decision support for qualified healthcare professionals. It does not replace clinical judgement
+or approved references. Doses and protocols are quick references that require verification against your
+local approved protocol and the product leaflet before use. Immunisation schedules change periodically and
+must be matched against the current national schedule. The note format reflects one department's house
+style and should be reviewed by your consultant before launch.

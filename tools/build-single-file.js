@@ -6,23 +6,23 @@ const root = path.join(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 
 const JS = ['assets/js/data-guides.js', 'assets/js/data-rx.js', 'assets/js/data-tools.js',
-  'assets/js/calculators.js', 'assets/js/data-geriatrics.js', 'assets/js/calc-geriatrics.js',
-  'assets/js/note-forms.js', 'assets/js/note-engine.js', 'assets/js/note-ui.js', 'assets/js/app.js'];
+  'assets/js/calculators.js', 'assets/js/note-forms.js', 'assets/js/note-engine.js',
+  'assets/js/note-ui.js', 'assets/js/app.js'];
 
 const html = read('index.html');
 const body = html.split('<body>')[1].split('</body>')[0]
   .replace(/\n<script src="[^"]+"><\/script>/g, '');
 
-const out = `<title>مساعد طبيب الأسرة</title>
+const out = `<title>Family Medicine Assistant</title>
 <style>
 ${read('assets/css/app.css')}
 </style>
 <script>
-/* The artifact host owns <html>, so set direction and language from script. */
+/* The artifact host owns <html>, so set language and direction from script. */
 (function () {
   var r = document.documentElement;
-  r.setAttribute('lang', 'ar');
-  r.setAttribute('dir', 'rtl');
+  r.setAttribute('lang', 'en');
+  r.setAttribute('dir', 'ltr');
 })();
 </script>
 ${body}
