@@ -150,8 +150,9 @@
   };
 
   const P = {
-    labs: ['CBC', 'HbA1c', 'Lipid profile', 'Renal profile and electrolytes', 'LFT', 'TSH',
-           'Urine ACR', 'Vitamin D', 'Ferritin', 'Urine analysis and culture', 'ECG today', 'Chest X-ray'],
+    /* One "Labs" line rather than a chip per test — the house format wants the
+       requested panel on a single line, and twelve chips slowed the tap down. */
+    labs: ['Labs: __', 'ECG today', 'Chest X-ray', 'Imaging: __'],
     referrals: ['Dietitian referral', 'Ophthalmology referral', 'Cardiology referral', 'Nephrology referral',
                 'Physiotherapy referral', 'Endocrine referral', 'Smoking cessation clinic referral',
                 'Psychology / counselling referral', 'Surgical referral'],
@@ -197,7 +198,7 @@
         { label: 'Counselling and prevention', lines: P.counselling },
       ],
       placeholder: 'Tap what you ordered, then add anything else in your own words.',
-      example: 'CBC, HbA1c, lipid profile\nDietitian referral\nMetformin increased to 1g BD',
+      example: 'Labs: CBC, HbA1c, lipid profile, renal profile\nDietitian referral\nMetformin increased to 1g BD',
       why: 'One item per line. This is the only place a reader learns what was actually ordered.' }),
     F('er_instructions', 'ER instructions — when must they come back immediately?', 'text', { required: true,
       example: 'in case of chest pain, syncope, or severe shortness of breath',
