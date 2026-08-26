@@ -62,9 +62,13 @@
         groups.forEach(g => {
           groupBox.appendChild(el('div', 'builder__grp', esc(g.label)));
           const box = el('div', 'chips');
-          g.lines.forEach(line => {
-            const c = el('button', 'chip chip--add', '+ ' + esc(line));
+          g.lines.forEach(item => {
+            /* an entry is either a plain string, or { t: chip label, v: line inserted } */
+            const label = typeof item === 'string' ? item : item.t;
+            const line = typeof item === 'string' ? item : item.v;
+            const c = el('button', 'chip chip--add', '+ ' + esc(label));
             c.type = 'button';
+            c.title = line;
             c.addEventListener('click', () => insert(line));
             box.appendChild(c);
           });
