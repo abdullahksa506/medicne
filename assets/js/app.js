@@ -66,7 +66,9 @@
     return document.documentElement.getAttribute('data-theme')
       || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   }
-  try { applyTheme(localStorage.getItem(THEME_KEY)); } catch (e) {}
+  /* Apply a stored choice only. Never clear the attribute on load — when the page is
+     embedded somewhere that stamps its own theme, removing it would strip that host's setting. */
+  try { const st = localStorage.getItem(THEME_KEY); if (st) applyTheme(st); } catch (e) {}
   $('#themeBtn').addEventListener('click', () => {
     const next = currentTheme() === 'dark' ? 'light' : 'dark';
     applyTheme(next);

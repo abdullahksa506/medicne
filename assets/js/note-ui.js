@@ -268,24 +268,41 @@
     view.appendChild(progress);
 
     const sections = window.noteSectionsFor(v);
-    const allRequired = [];
-    sections.forEach(s => s.fields.forEach(f => { if (f.required) allRequired.push(f.id); }));
+    const rendered = [];   /* { f, node } for every field, shown or not */
+    const secNodes = [];   /* { fields, title, card } so an empty section hides too */
 
+    const filled = id => {
+      const x = DATA[id];
+      return Array.isArray(x) ? x.length > 0 : (x !== undefined && x !== null && String(x).trim() !== '');
+    };
+
+    /* Re-evaluate every `when` on each answer, so questions appear the moment they
+       become relevant and disappear again when they stop being. */
     const update = () => {
-      const done = allRequired.filter(id => {
-        const x = DATA[id];
-        return Array.isArray(x) ? x.length : (x !== undefined && x !== null && String(x).trim() !== '');
-      }).length;
-      const pct = Math.round(done / allRequired.length * 100);
+      rendered.forEach(r => { r.node.hidden = !window.noteFieldVisible(r.f, DATA); });
+      secNodes.forEach(sn => {
+        const anyVisible = sn.fields.some(f => window.noteFieldVisible(f, DATA));
+        sn.title.hidden = !anyVisible;
+        sn.card.hidden = !anyVisible;
+      });
+      const req = rendered.filter(r => r.f.required && window.noteFieldVisible(r.f, DATA));
+      const done = req.filter(r => filled(r.f.id)).length;
+      const pct = req.length ? Math.round(done / req.length * 100) : 0;
       progress.innerHTML = '<div class="note-progress__bar"><span style="width:' + pct + '%"></span></div>' +
-        '<div class="note-progress__t">' + done + ' of ' + allRequired.length + ' required fields</div>';
+        '<div class="note-progress__t">' + done + ' of ' + req.length + ' required fields</div>';
     };
 
     sections.forEach(s => {
-      view.appendChild(el('div', 'sec-title', s.title + ' · ' + s.ar));
+      const title = el('div', 'sec-title', s.title + ' · ' + s.ar);
       const card = el('div', 'card');
-      s.fields.forEach(f => card.appendChild(fieldControl(f, update)));
+      s.fields.forEach(f => {
+        const node = fieldControl(f, update);
+        card.appendChild(node);
+        rendered.push({ f: f, node: node });
+      });
+      view.appendChild(title);
       view.appendChild(card);
+      secNodes.push({ fields: s.fields, title: title, card: card });
     });
 
     const btns = el('div', 'btnrow btnrow--sticky');

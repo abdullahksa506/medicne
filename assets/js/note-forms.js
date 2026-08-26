@@ -10,6 +10,18 @@
 
   const NONE = 'None of the above';
 
+  /* ---------- conditional visibility ----------
+     A field carries `when(data)`. It is shown only when the predicate passes, so the
+     form asks the diabetes questions only once you have said the patient has diabetes.
+     A hidden field's answer is kept in memory (toggling back restores it) but is never
+     read into the note — an answer you cannot currently see must not become a finding. */
+  const picked = (id, v) => d => Array.isArray(d[id]) && d[id].indexOf(v) >= 0;
+  const equals = (id, v) => d => d[id] === v;
+  const oneOf = (id, vs) => d => vs.indexOf(d[id]) >= 0;
+  const atLeast = (id, n) => d => Number(d[id]) >= n;
+
+  const isVisible = (f, d) => !f.when || !!f.when(d || {});
+
   /* ---------- red-flag screen builder ---------- */
   const redFlagField = (opts, flags, why) => F('red_flags', 'Red flag screen', 'multiselect', {
     required: true, options: opts.concat([NONE]), redFlags: flags,
@@ -26,7 +38,8 @@
       why: 'Part of the house opening line.' }),
     F('smoking', 'Smoking', 'select', { required: true, options: ['Non-smoker', 'Ex-smoker', 'Smoker'], example: 'Non-smoker',
       why: 'Drives CVD risk, and the opening line records it every visit.' }),
-    F('pack_years', 'Pack-years (if smoker)', 'number', { required: false, example: '20',
+    F('pack_years', 'Pack-years', 'number', { required: false, example: '20',
+      when: oneOf('smoking', ['Smoker', 'Ex-smoker']),
       why: '20 pack-years is the threshold for lung cancer screening eligibility.' }),
     F('known_case', 'Known case of — one problem per line', 'textarea', { required: true,
       example: 'T2DM: on Metformin 1g BD, HbA1c 7.9%\nHTN: on Amlodipine 5mg OD, controlled\nHypothyroid: following with Endocrine, stable',
@@ -39,6 +52,7 @@
   const SUBJ_TAIL = [
     F('mc', 'Menstrual cycle', 'select', { required: false,
       options: ['MC is regular', 'MC is irregular', 'Post-menopausal', 'Not applicable'], example: 'MC is regular',
+      when: equals('sex', 'female'),
       why: 'Recorded for every female patient of reproductive age; irregularity changes the workup.' }),
     F('depression_screen', 'Depression screening', 'select', { required: true,
       options: ['-ive', '+ive', 'Not done'], example: '-ive',
@@ -86,11 +100,13 @@
     F('disagreement', 'Did the patient insist on or decline anything?', 'select', { required: true,
       options: ['No', 'Insisted on something', 'Declined something'], example: 'No',
       why: 'If yes, the note must record all four parts: what you explained, that they disagreed, what you did, what you offered instead (A6).' }),
-    F('disagreement_what', 'What did they insist on / decline?', 'text', { required: false,
+    F('disagreement_what', 'What did they insist on / decline?', 'text', { required: true,
       example: 'requested a full body CT for reassurance',
+      when: d => d.disagreement && d.disagreement !== 'No',
       why: 'Name the specific request — "wanted tests" is not documentation.' }),
-    F('disagreement_action', 'What did you do, and what did you offer instead?', 'text', { required: false,
+    F('disagreement_action', 'What did you do, and what did you offer instead?', 'text', { required: true,
       example: 'not ordered, rationale documented; targeted ultrasound offered and accepted',
+      when: d => d.disagreement && d.disagreement !== 'No',
       why: 'Completes the four-part sequence (A6).' }),
   ];
 
@@ -119,6 +135,11 @@
     tags: ['diabetes', 'dm', 'htn', 'hypertension', 'chronic', 'سكري', 'ضغط', 'متابعة'],
     reason: 'follow up', purpose: 'for lab results',
     subjective: [
+      F('conditions', 'Which problems are you reviewing today?', 'multiselect', { required: true, allowCustom: true,
+        options: ['Diabetes', 'Hypertension', 'Dyslipidaemia', 'Hypothyroidism', 'Asthma / COPD',
+                  'CKD', 'IHD / AF', 'Osteoporosis', 'Obesity'],
+        example: 'Diabetes, Hypertension',
+        why: 'The rest of this form adapts to what you pick — you only get the questions that matter for these problems.' }),
       F('control_status', 'Control status of each problem', 'textarea', { required: true,
         example: 'T2DM: HbA1c 7.9%, rising from 7.2%. Missing evening Metformin dose 2-3 times/week.\nHTN: home readings 125-135/75-85',
         why: 'Direction matters more than the value. "Rising from 7.2%" tells the next reader what to do (A3).' }),
@@ -127,15 +148,93 @@
                   'Admits missing doses frequently', 'Self-discontinued a medication'],
         example: 'Admits missing doses occasionally',
         why: 'Ask non-judgementally: "most people miss doses — how many times this week?" Never write "non-compliant" (R6).' }),
-      F('hypo_symptoms', 'Hypoglycaemia symptoms (if diabetic)', 'select', { required: false,
-        options: ['No hypoglycaemic episodes', 'Occasional mild episodes', 'Frequent or severe episodes', 'Not applicable'],
+
+      /* --- diabetes --- */
+      F('hypo_symptoms', 'Hypoglycaemia episodes', 'select', { required: true,
+        when: picked('conditions', 'Diabetes'),
+        options: ['No hypoglycaemic episodes', 'Occasional mild episodes', 'Frequent or severe episodes'],
+        redFlags: ['Frequent or severe episodes'],
         example: 'No hypoglycaemic episodes',
         why: 'In older adults hypoglycaemia presents as confusion or falls, not tremor — and it means the regimen is too tight.' }),
-      F('complications', 'Complication screening completed', 'multiselect', { required: true, allowCustom: true,
+      F('dm_complications', 'Diabetes complication screening', 'multiselect', { required: true, allowCustom: true,
+        when: picked('conditions', 'Diabetes'),
         options: ['Fundus exam up to date', 'Foot exam done today', 'Urine ACR up to date',
-                  'Lipid profile up to date', 'None up to date'],
+                  'Monofilament sensation intact', 'None up to date'],
         example: 'Foot exam done today, fundus exam up to date',
         why: 'Complication screening is the part of chronic care that silently lapses for years.' }),
+      F('dm_symptoms', 'Osmotic symptoms', 'multiselect', { required: false,
+        when: picked('conditions', 'Diabetes'),
+        options: ['Polyuria', 'Polydipsia', 'Unintentional weight loss', 'Blurred vision', 'New foot numbness', NONE],
+        redFlags: ['Unintentional weight loss', 'New foot numbness'],
+        example: NONE,
+        why: 'Osmotic symptoms mean the glucose is high enough to need action today, not at the next visit.' }),
+
+      /* --- hypertension --- */
+      F('home_bp', 'Home BP readings', 'text', { required: true,
+        when: picked('conditions', 'Hypertension'),
+        example: '125-135 / 75-85, taken twice daily for a week',
+        why: 'Home readings predict outcomes better than clinic readings and settle white-coat hypertension.' }),
+      F('htn_sx', 'Symptoms on antihypertensives', 'multiselect', { required: false,
+        when: picked('conditions', 'Hypertension'),
+        options: ['Dizziness on standing', 'Ankle swelling', 'Dry cough', 'Fatigue', NONE],
+        redFlags: ['Dizziness on standing'],
+        example: NONE,
+        why: 'Postural dizziness means the dose is too high for this patient regardless of the clinic number.' }),
+
+      /* --- lipids --- */
+      F('statin_status', 'Statin', 'select', { required: true,
+        when: picked('conditions', 'Dyslipidaemia'),
+        options: ['On statin, tolerating well', 'On statin with muscle symptoms', 'Self-discontinued the statin',
+                  'Not on a statin'],
+        redFlags: ['On statin with muscle symptoms'],
+        example: 'On statin, tolerating well',
+        why: 'Most statin "intolerance" is dose- or drug-specific and recoverable — but only if you record it.' }),
+
+      /* --- thyroid --- */
+      F('thyroid_sx', 'Thyroid symptoms', 'multiselect', { required: false,
+        when: picked('conditions', 'Hypothyroidism'),
+        options: ['Fatigue', 'Cold intolerance', 'Constipation', 'Weight gain', 'Hair loss', NONE],
+        example: NONE,
+        why: 'Symptoms with a normal TSH usually mean something else — do not keep raising the dose.' }),
+
+      /* --- airways --- */
+      F('asthma_control', 'Control in the last 4 weeks', 'multiselect', { required: true,
+        when: picked('conditions', 'Asthma / COPD'),
+        options: ['Daytime symptoms more than twice a week', 'Any night waking due to symptoms',
+                  'Reliever needed more than twice a week', 'Any activity limitation', NONE],
+        redFlags: ['Any night waking due to symptoms'],
+        example: NONE,
+        why: 'These four questions are the whole control assessment. None = controlled; three or four = uncontrolled.' }),
+      F('inhaler_technique', 'Inhaler technique', 'select', { required: true,
+        when: picked('conditions', 'Asthma / COPD'),
+        options: ['Checked today, correct', 'Checked today, corrected', 'Not checked this visit'],
+        example: 'Checked today, correct',
+        why: 'Check technique before stepping up treatment — bad technique looks exactly like uncontrolled disease.' }),
+
+      /* --- kidney --- */
+      F('ckd_trend', 'eGFR trend', 'text', { required: true,
+        when: picked('conditions', 'CKD'),
+        example: 'eGFR 41, was 47 twelve months ago; ACR 12',
+        why: 'A falling eGFR is the finding; a single value is not (A3). It also drives every dose in the list.' }),
+
+      /* --- cardiac --- */
+      F('cardiac_sx', 'Cardiac symptoms', 'multiselect', { required: true,
+        when: picked('conditions', 'IHD / AF'),
+        options: ['Chest pain on exertion', 'Palpitation', 'Orthopnoea or PND', 'New leg swelling',
+                  'Syncope or presyncope', NONE],
+        redFlags: ['Chest pain on exertion', 'Orthopnoea or PND', 'Syncope or presyncope'],
+        example: NONE,
+        why: 'These separate stable disease from a presentation that needs action in this visit.' }),
+
+      /* --- bone --- */
+      F('osteo_status', 'Bone health', 'multiselect', { required: false,
+        when: picked('conditions', 'Osteoporosis'),
+        options: ['On bisphosphonate, taking it correctly', 'Calcium and vitamin D replete',
+                  'New fracture since last visit', 'Fall in the last year', 'Dental check done'],
+        redFlags: ['New fracture since last visit', 'Fall in the last year'],
+        example: 'On bisphosphonate, taking it correctly, calcium and vitamin D replete',
+        why: 'A fragility fracture on treatment means the treatment needs review, not continuation.' }),
+
       redFlagField(
         ['Chest pain', 'New shortness of breath', 'Visual loss or new blurring', 'Foot ulcer or new numbness',
          'Severe hypoglycaemia needing help', 'Leg swelling'],
@@ -163,6 +262,7 @@
         example: 'Doing well, No complaints',
         why: 'The house phrase is "Doing well, No complaints" — keep it exact.' }),
       F('cvd_risk', 'CVD risk assessment', 'textarea', { required: false,
+        when: atLeast('age', 40),
         example: 'Non-smoker, BMI 27.4, BP controlled, LDL 3.1, no FMHx of premature CVD. ASCVD 10-yr risk 6.2%.',
         why: 'A routine visit is the only chance to do primary prevention properly.' }),
       F('screening_due', 'Screening due', 'multiselect', { required: true, allowCustom: true,
@@ -592,6 +692,12 @@
         redFlags: ['5-9', '10 or more'],
         example: '5-9',
         why: 'Five or more warrants a dedicated medication review — not one squeezed into a busy visit.' }),
+      F('med_review_done', 'Medication review', 'select', { required: true,
+        when: oneOf('polypharmacy', ['5-9', '10 or more']),
+        options: ['Full review done today', 'Booked a dedicated review appointment', 'Not yet reviewed'],
+        redFlags: ['Not yet reviewed'],
+        example: 'Booked a dedicated review appointment',
+        why: 'Five or more medications needs its own appointment. Squeezing it into a busy visit is how it never happens.' }),
       F('geriatric_screen', 'Screening domains covered today', 'multiselect', { required: true, allowCustom: true,
         options: ['Falls in the last year asked', 'Cognition screened', 'Mood screened', 'Continence asked',
                   'Nutrition / weight trend reviewed', 'Vision and hearing asked', 'Function (ADL/IADL) asked',
@@ -639,6 +745,12 @@
         redFlags: ['Yes', 'Uncertain'],
         example: 'No',
         why: 'Loss of consciousness makes this syncope, not a fall — cardiac workup, not a physiotherapy referral.' }),
+      F('syncope_workup', 'Syncope workup done today', 'multiselect', { required: true, allowCustom: true,
+        when: oneOf('loc', ['Yes', 'Uncertain']),
+        options: ['ECG done', 'Postural BP done', 'Cardiac murmur excluded', 'Referred to cardiology', 'None yet'],
+        redFlags: ['None yet'],
+        example: 'ECG done, postural BP done',
+        why: 'With loss of consciousness this is syncope, not a fall — it needs a cardiac workup, not physiotherapy.' }),
       F('circumstances', 'Circumstances', 'multiselect', { required: true, allowCustom: true,
         options: ['Tripped over an object', 'On standing up', 'While walking outdoors', 'At night going to the bathroom',
                   'On stairs', 'No clear trigger'],
@@ -756,4 +868,9 @@
 
   window.NOTE_VISITS = V;
   window.noteSectionsFor = sectionsFor;
+  window.noteFieldVisible = isVisible;
+  /* sections with only the fields currently applicable to `data` */
+  window.noteVisibleSectionsFor = (v, data) => sectionsFor(v)
+    .map(s => Object.assign({}, s, { fields: s.fields.filter(f => isVisible(f, data)) }))
+    .filter(s => s.fields.length);
 })();

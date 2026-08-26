@@ -99,8 +99,12 @@
       return b.text;
     };
 
-    /* --- collect red flags across all fields (R4) --- */
-    const sections = window.noteSectionsFor(visit);
+    /* Only fields currently applicable to this patient are read. An answer the
+       clinician can no longer see must not silently reach the record (R1). */
+    const vis = f => window.noteFieldVisible(f, data);
+
+    /* --- collect red flags across all applicable fields (R4) --- */
+    const sections = window.noteVisibleSectionsFor(visit, data);
     sections.forEach(sec => sec.fields.forEach(f => {
       if (!f.redFlags || !f.redFlags.length) return;
       const raw = data[f.id];
@@ -162,7 +166,9 @@
     /* problem-specific block: every visit-specific field that has a value */
     const specificLines = [];
     (visit.subjective || []).forEach(f => {
-      if (f.id === 'hpi_detail' || f.id === 'control_status' || f.id === 'complaints') return;
+      /* `conditions` steers which questions appear; it is not itself a clinical finding */
+      if (f.id === 'hpi_detail' || f.id === 'control_status' || f.id === 'complaints' || f.id === 'conditions') return;
+      if (!vis(f)) return;
       const v = get(f.id);
       if (!v) {
         if (f.required) missing.push({ field: f.id, label: f.en.toLowerCase(), why: f.why || '', placeholder: PH(f.en.toLowerCase()) });
@@ -219,6 +225,7 @@
     L.push('Physical exam:');
     L.push(get('general_exam') || 'Looking well, not in pain or distress');
     (visit.exam || []).forEach(f => {
+      if (!vis(f)) return;
       const v = get(f.id);
       if (!v) {
         if (f.required) missing.push({ field: f.id, label: f.en.toLowerCase(), why: f.why || '', placeholder: PH(f.en.toLowerCase()) });
@@ -313,8 +320,9 @@
     const detailed = kcLines.filter(l => /\d/.test(l) && /(on |following with|controlled|uncontrolled|stable)/i.test(l)).length;
     r.problem_list_detail = noProblems ? 2 : !kcLines.length ? 0 : (detailed === kcLines.length ? 2 : detailed ? 1 : 0);
 
-    /* 2. problem-specific negatives */
-    const specFields = (visit.subjective || []).filter(f => f.id !== 'red_flags');
+    /* 2. problem-specific negatives — judged against the questions actually asked */
+    const specFields = (visit.subjective || [])
+      .filter(f => f.id !== 'red_flags' && window.noteFieldVisible(f, data));
     const specDone = specFields.filter(f => val(data[f.id])).length;
     const rfDone = !!val(data.red_flags);
     r.problem_specific_negatives = (rfDone && specDone >= Math.max(2, Math.ceil(specFields.length * 0.6))) ? 2
